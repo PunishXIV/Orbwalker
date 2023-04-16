@@ -1,0 +1,56 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33513.286
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbwalker", "Orbwalker\Orbwalker.csproj", "{8C4F0BDB-D51D-42B8-B607-6E500FF6EE5D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ECommons", "ECommons\ECommons\ECommons.csproj", "{E9FD3517-CC90-4EAA-B325-609B0B41D560}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PunishLib", "PunishLib", "{006C1DC1-CE62-45A4-B71B-DA22C394E95B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PunishLib", "PunishLib\PunishLib\PunishLib.csproj", "{5D8FA110-BBB5-4F4E-BA05-27F53D859A12}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8C4F0BDB-D51D-42B8-B607-6E500FF6EE5D}.Debug|Any CPU.ActiveCfg = Release|x64
+		{8C4F0BDB-D51D-42B8-B607-6E500FF6EE5D}.Debug|Any CPU.Build.0 = Release|x64
+		{8C4F0BDB-D51D-42B8-B607-6E500FF6EE5D}.Debug|x64.ActiveCfg = Debug|x64
+		{8C4F0BDB-D51D-42B8-B607-6E500FF6EE5D}.Debug|x64.Build.0 = Debug|x64
+		{8C4F0BDB-D51D-42B8-B607-6E500FF6EE5D}.Release|Any CPU.ActiveCfg = Release|x64
+		{8C4F0BDB-D51D-42B8-B607-6E500FF6EE5D}.Release|Any CPU.Build.0 = Release|x64
+		{8C4F0BDB-D51D-42B8-B607-6E500FF6EE5D}.Release|x64.ActiveCfg = Release|x64
+		{8C4F0BDB-D51D-42B8-B607-6E500FF6EE5D}.Release|x64.Build.0 = Release|x64
+		{E9FD3517-CC90-4EAA-B325-609B0B41D560}.Debug|Any CPU.ActiveCfg = Release|x64
+		{E9FD3517-CC90-4EAA-B325-609B0B41D560}.Debug|Any CPU.Build.0 = Release|x64
+		{E9FD3517-CC90-4EAA-B325-609B0B41D560}.Debug|x64.ActiveCfg = Debug|x64
+		{E9FD3517-CC90-4EAA-B325-609B0B41D560}.Debug|x64.Build.0 = Debug|x64
+		{E9FD3517-CC90-4EAA-B325-609B0B41D560}.Release|Any CPU.ActiveCfg = Release|x64
+		{E9FD3517-CC90-4EAA-B325-609B0B41D560}.Release|Any CPU.Build.0 = Release|x64
+		{E9FD3517-CC90-4EAA-B325-609B0B41D560}.Release|x64.ActiveCfg = Release|x64
+		{E9FD3517-CC90-4EAA-B325-609B0B41D560}.Release|x64.Build.0 = Release|x64
+		{5D8FA110-BBB5-4F4E-BA05-27F53D859A12}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{5D8FA110-BBB5-4F4E-BA05-27F53D859A12}.Debug|Any CPU.Build.0 = Debug|x64
+		{5D8FA110-BBB5-4F4E-BA05-27F53D859A12}.Debug|x64.ActiveCfg = Debug|x64
+		{5D8FA110-BBB5-4F4E-BA05-27F53D859A12}.Debug|x64.Build.0 = Debug|x64
+		{5D8FA110-BBB5-4F4E-BA05-27F53D859A12}.Release|Any CPU.ActiveCfg = Release|x64
+		{5D8FA110-BBB5-4F4E-BA05-27F53D859A12}.Release|Any CPU.Build.0 = Release|x64
+		{5D8FA110-BBB5-4F4E-BA05-27F53D859A12}.Release|x64.ActiveCfg = Release|x64
+		{5D8FA110-BBB5-4F4E-BA05-27F53D859A12}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6EC3AC97-DC17-436E-A2E1-498C60511997}
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{5D8FA110-BBB5-4F4E-BA05-27F53D859A12} = {006C1DC1-CE62-45A4-B71B-DA22C394E95B}
+	EndGlobalSection
+EndGlobal

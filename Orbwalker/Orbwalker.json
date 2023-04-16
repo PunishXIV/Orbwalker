@@ -1,0 +1,11 @@
+{
+    "Author": "кайт машина (Puni.sh)",
+    "Name": "Orbwalker",
+    "InternalName": "Orbwalker",
+    "Description": "Locks player movement while casting and allows for maximum caster uptime during the course of a fight.",
+    "ApplicableVersion": "any",
+    "Punchline": "S P A C E G L I D I N G",
+    "IconUrl": "https://love.puni.sh/resources/plugin.png",
+    "RepoUrl": "https://github.com/PunishXIV/Orbwalker",
+    "AcceptsFeedback": false
+}
