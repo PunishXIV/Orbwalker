@@ -20,7 +20,7 @@ namespace Unmoveable
         internal static bool CanUsePlugin()
         {
             if (!Player.Available) return false;
-            if (((Job)Player.Object.ClassJob.Id).EqualsAny(Job.SMN, Job.RDM, Job.BLM, Job.WHM, Job.SCH, Job.AST, Job.SGE, Job.RPR, Job.SAM)) return true;
+            if (((Job)Player.Object.ClassJob.Id).EqualsAny(Job.SMN, Job.RDM, Job.BLM, Job.WHM, Job.SCH, Job.AST, Job.SGE, Job.RPR, Job.SAM, Job.BLU)) return true;
             return false;
         }
 
