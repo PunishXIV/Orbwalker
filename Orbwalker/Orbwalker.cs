@@ -88,7 +88,7 @@ namespace Unmoveable
                 }
                 DelayedAction = null;
             }
-            if (P.Config.Enabled && Player.Available)
+            if (P.Config.Enabled && Util.CanUsePlugin())
             {
                 if (P.Config.IsHoldToRelease)
                 {

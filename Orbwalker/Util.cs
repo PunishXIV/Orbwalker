@@ -1,4 +1,7 @@
-﻿using ECommons.MathHelpers;
+﻿using ECommons;
+using ECommons.ExcelServices;
+using ECommons.GameHelpers;
+using ECommons.MathHelpers;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using ImGuiScene;
 using Lumina.Excel.GeneratedSheets;
@@ -14,6 +17,13 @@ namespace Unmoveable
 {
     internal unsafe static class Util
     {
+        internal static bool CanUsePlugin()
+        {
+            if (!Player.Available) return false;
+            if (((Job)Player.Object.ClassJob.Id).EqualsAny(Job.SMN, Job.RDM, Job.BLM, Job.WHM, Job.SCH, Job.AST, Job.SGE, Job.RPR, Job.SAM)) return true;
+            return false;
+        }
+
         internal static Vector2 GetSize(this TextureWrap t, float height)
         {
             return new Vector2(t.Width * (height / t.Height), height);

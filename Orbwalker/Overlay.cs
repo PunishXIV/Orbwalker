@@ -70,7 +70,7 @@ namespace Unmoveable
 
         public override bool DrawConditions()
         {
-            return P.Config.Enabled && (P.Config.DisplayAlways || (Svc.Condition[ConditionFlag.BoundByDuty56] && P.Config.DisplayDuty) || (Svc.Condition[ConditionFlag.InCombat] && P.Config.DisplayBattle));
+            return P.Config.Enabled && Util.CanUsePlugin() && (P.Config.DisplayAlways || (Svc.Condition[ConditionFlag.BoundByDuty56] && P.Config.DisplayDuty) || (Svc.Condition[ConditionFlag.InCombat] && P.Config.DisplayBattle));
         }
     }
 }
