@@ -153,7 +153,7 @@ namespace Unmoveable
                     ImGuiEx.Text(ImGuiColors.DalamudYellow, $"Now press new key...");
                     foreach (var x in Enum.GetValues<Keys>())
                     {
-                        if (Bitmask.IsBitSet(User32.GetKeyState((int)x), 15))
+                        if (IsKeyPressed(x))
                         {
                             KeyInputActive = null;
                             key = x;

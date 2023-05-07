@@ -40,7 +40,7 @@ namespace Unmoveable
             if (Bitmask.IsBitSet(User32.GetKeyState((int)Keys.A), 15)) return true;
             if (Bitmask.IsBitSet(User32.GetKeyState((int)Keys.S), 15)) return true;
             if (Bitmask.IsBitSet(User32.GetKeyState((int)Keys.D), 15)) return true;*/
-            if (Bitmask.IsBitSet(User32.GetKeyState((int)Keys.LButton), 15) && Bitmask.IsBitSet(User32.GetKeyState((int)Keys.RButton), 15)) return true;
+            if (IsKeyPressed(Keys.LButton) && IsKeyPressed(Keys.RButton)) return true;
             return false;
         }
     }

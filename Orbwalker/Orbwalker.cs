@@ -66,7 +66,7 @@ namespace Unmoveable
 
         internal bool IsUnlockKeyHeld()
         {
-            return !Framework.Instance()->WindowInactive && (P.Config.ReleaseKey != Keys.None && Bitmask.IsBitSet(User32.GetKeyState((int)P.Config.ReleaseKey), 15));
+            return !Framework.Instance()->WindowInactive && (P.Config.ReleaseKey != Keys.None && IsKeyPressed(P.Config.ReleaseKey));
         }
 
         private void Framework_Update(Dalamud.Game.Framework framework)
@@ -133,7 +133,7 @@ namespace Unmoveable
                         WasCancelled = false;
                         P.Config.MoveKeys.Each(x =>
                         {
-                            if (Bitmask.IsBitSet(User32.GetKeyState((int)x), 15))
+                            if (IsKeyPressed((Keys)x))
                             {
                                 DalamudReflector.SetKeyState(x, 3);
                                 InternalLog.Debug($"Reenabling key {x}");
