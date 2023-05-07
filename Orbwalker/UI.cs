@@ -135,6 +135,7 @@ namespace Unmoveable
                 var addInfo = stackalloc uint[1];
                 ImGuiEx.Text($"{ActionManager.Instance()->GetActionStatus(ActionType.Spell, 16541, Svc.Targets.Target.Struct()->GetObjectID(), outOptExtraInfo: addInfo)} / {*addInfo}");
             }
+            ImGuiEx.Text($"GCD: {Util.GCD}\nRCorGRD:{Util.GetRCorGDC()}");
         }
 
         static string KeyInputActive = null;

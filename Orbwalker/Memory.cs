@@ -1,4 +1,5 @@
-﻿using Dalamud.Hooking;
+﻿using Dalamud.Game.ClientState.GamePad;
+using Dalamud.Hooking;
 using Dalamud.Utility.Signatures;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
@@ -44,7 +45,7 @@ namespace Unmoveable
                 try
                 {
                     InternalLog.Verbose($"{type}, {acId}, {target}");
-                    if (P.DelayedAction == null && type == ActionType.Spell && Util.IsActionCastable(acId) && P.GCD == 0 && AgentMap.Instance()->IsPlayerMoving != 0)
+                    if (P.DelayedAction == null && type == ActionType.Spell && Util.IsActionCastable(acId) && Util.GCD == 0 && AgentMap.Instance()->IsPlayerMoving != 0 && !am->ActionQueued)
                     {
                         P.DelayedAction = new(acId, 0, target, a5, a6, a7, a8);
                         return false;
@@ -108,6 +109,7 @@ namespace Unmoveable
 
         internal void EnableHooks()
         {
+            
             InputData_IsInputIDKeyPressedHook.Enable();
             InputData_IsInputIDKeyClickedHook.Enable();
             InputData_IsInputIDKeyHeldHook.Enable();

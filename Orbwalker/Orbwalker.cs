@@ -42,16 +42,6 @@ namespace Unmoveable
             });
         }
 
-        internal float GCD 
-        { 
-            get
-            {
-                var cd = ActionManager.Instance()->GetRecastGroupDetail(57);
-                if (cd->IsActive == 0) return 0;
-                return cd->Total - cd->Elapsed;
-            }
-        }
-
         bool IsCasting()
         {
             if (P.Config.IsSlideAuto)
@@ -105,7 +95,7 @@ namespace Unmoveable
                 }
                 //DuoLog.Information($"{GCD}");
                 var qid = ActionQueue.Get()->ActionID;
-                if ((IsCasting() || DelayedAction != null || (qid != 0 && Util.IsActionCastable(qid) && GCD < 0.1) || (P.Config.ForceStopMoveCombat && Svc.Condition[ConditionFlag.InCombat] && GCD < 0.1 && !(qid != 0 && !Util.IsActionCastable(qid)))) && !ShouldUnlock)
+                if ((IsCasting() || DelayedAction != null || (qid != 0 && Util.IsActionCastable(qid) && Util.GetRCorGDC() < 0.01) || (P.Config.ForceStopMoveCombat && Svc.Condition[ConditionFlag.InCombat] && Util.GetRCorGDC() < 0.01 && !(qid != 0 && !Util.IsActionCastable(qid)))) && !ShouldUnlock)
                 {
                     if (!P.Config.DisableMouseDisabling && Util.IsMouseMoveOrdered())
                     {
