@@ -53,7 +53,7 @@ namespace Unmoveable
         internal bool IsUnlockKeyHeld()
         {
             if (P.Config.ControllerMode)
-                return P.Config.ReleaseButton != Dalamud.Game.ClientState.GamePad.GamepadButtons.None && GamePad.IsButtonPressed(P.Config.ReleaseButton);
+                return P.Config.ReleaseButton != Dalamud.Game.ClientState.GamePad.GamepadButtons.None && (GamePad.IsButtonHeld(P.Config.ReleaseButton) || GamePad.IsButtonPressed(P.Config.ReleaseButton));
             else
                 return !Framework.Instance()->WindowInactive && (P.Config.ReleaseKey != Keys.None && IsKeyPressed(P.Config.ReleaseKey));
         }
@@ -95,7 +95,7 @@ namespace Unmoveable
                 //DuoLog.Information($"{GCD}");
                 var qid = ActionQueue.Get()->ActionID;
                 qid = ActionManager.Instance()->GetAdjustedActionId(qid);
-                if ((IsCasting() || DelayedAction != null || (qid != 0 && Util.IsActionCastable(qid) && Util.GetRCorGDC() < 0.01) || (P.Config.ForceStopMoveCombat && Svc.Condition[ConditionFlag.InCombat] && Util.GetRCorGDC() < 0.01 && !(qid != 0 && !Util.IsActionCastable(qid)))) && !ShouldUnlock)
+                if ((IsCasting() || DelayedAction != null || (qid != 0 && Util.IsActionCastable(qid) && Util.GetRCorGDC() < 0.1) || (P.Config.ForceStopMoveCombat && Svc.Condition[ConditionFlag.InCombat] && Util.GetRCorGDC() < 0.1 && !(qid != 0 && !Util.IsActionCastable(qid)))) && !ShouldUnlock)
                 {
                     if ((!P.Config.DisableMouseDisabling && Util.IsMouseMoveOrdered()) || P.Config.ControllerMode)
                     {

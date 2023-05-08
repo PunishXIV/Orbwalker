@@ -3,6 +3,7 @@ using Dalamud.Hooking;
 using Dalamud.Utility.Signatures;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
+using Lumina.Excel.GeneratedSheets;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -44,6 +45,7 @@ namespace Unmoveable
             {
                 try
                 {
+                    acId = am->GetAdjustedActionId(acId);
                     InternalLog.Verbose($"{type}, {acId}, {target}");
                     if (P.DelayedAction == null && type == ActionType.Spell && Util.IsActionCastable(acId) && Util.GCD == 0 && AgentMap.Instance()->IsPlayerMoving != 0 && !am->ActionQueued)
                     {
