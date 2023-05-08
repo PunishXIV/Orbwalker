@@ -118,10 +118,24 @@ namespace Unmoveable
 
         private bool ShouldPreventMovement()
         {
+            return IsCastingOrDelayedAction() || IsCastableActionWithLowGCD() || IsInCombatWithLowGCDAndNotUnusableAction();
+        }
+
+        private bool IsCastingOrDelayedAction()
+        {
+            return IsCasting() || DelayedAction != null;
+        }
+
+        private bool IsCastableActionWithLowGCD()
+        {
             var qid = ActionQueue.Get()->ActionID;
-            return (IsCasting() || DelayedAction != null || (qid != 0 && Util.IsActionCastable(qid) && GCD < 0.1) ||
-                    (P.Config.ForceStopMoveCombat && Svc.Condition[ConditionFlag.InCombat] && GCD < 0.1 &&
-                     !(qid != 0 && !Util.IsActionCastable(qid))));
+            return qid != 0 && Util.IsActionCastable(qid) && Util.GCD < 0.1;
+        }
+
+        private bool IsInCombatWithLowGCDAndNotUnusableAction()
+        {
+            var qid = ActionQueue.Get()->ActionID;
+            return P.Config.ForceStopMoveCombat && Svc.Condition[ConditionFlag.InCombat] && Util.GCD < 0.1 && !(qid != 0 && !Util.IsActionCastable(qid));
         }
 
         private void HandleMovementPrevention()
