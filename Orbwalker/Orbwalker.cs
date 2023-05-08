@@ -13,7 +13,7 @@ using PInvoke;
 using System.Reflection.Metadata.Ecma335;
 using System.Windows.Forms;
 
-namespace Unmoveable
+namespace Orbwalker
 {
     public unsafe class Orbwalker : IDalamudPlugin
     {

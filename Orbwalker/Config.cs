@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Unmoveable
+namespace Orbwalker
 {
     public class Config : IEzConfig
     {

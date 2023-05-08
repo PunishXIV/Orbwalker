@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Unmoveable
+namespace Orbwalker
 {
     internal static class MoveManager
     {
