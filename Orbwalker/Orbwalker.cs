@@ -6,8 +6,6 @@ using ECommons.SimpleGui;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
-using Orbwalker;
-using System.Diagnostics.Eventing.Reader;
 using System.Windows.Forms;
 
 namespace Orbwalker
@@ -48,12 +46,11 @@ namespace Orbwalker
 
         internal bool IsUnlockKeyHeld()
         {
-            if (P.Config.ControllerMode)
-                return P.Config.ReleaseButton != Dalamud.Game.ClientState.GamePad.GamepadButtons.None && (GamePad.IsButtonPressed(P.Config.ReleaseButton) || GamePad.IsButtonHeld(P.Config.ReleaseButton));
-            else
-                return !Framework.Instance()->WindowInactive && P.Config.ReleaseKey != Keys.None && IsKeyPressed(P.Config.ReleaseKey);
+            return P.Config.ControllerMode 
+                ? P.Config.ReleaseButton != Dalamud.Game.ClientState.GamePad.GamepadButtons.None && (GamePad.IsButtonPressed(P.Config.ReleaseButton) || GamePad.IsButtonHeld(P.Config.ReleaseButton)) 
+                : !Framework.Instance()->WindowInactive && P.Config.ReleaseKey != Keys.None && IsKeyPressed(P.Config.ReleaseKey);
         }
-        
+
         private void Framework_Update(Dalamud.Game.Framework framework)
         {
             PerformDelayedAction();
