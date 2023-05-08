@@ -17,6 +17,26 @@ namespace Unmoveable
 {
     internal unsafe static class Util
     {
+        internal static float GCD
+        {
+            get
+            {
+                var cd = ActionManager.Instance()->GetRecastGroupDetail(57);
+                if (cd->IsActive == 0) return 0;
+                return cd->Total - cd->Elapsed;
+            }
+        }
+
+        internal static float GetRCorGDC()
+        {
+            float ret1 = 0;
+            if(Player.Object.CastActionId != 0)
+            {
+                ret1 = Player.Object.TotalCastTime - Player.Object.CurrentCastTime;
+            }
+            return Math.Max(ret1, GCD);
+        }
+
         internal static bool CanUsePlugin()
         {
             if (!Player.Available) return false;
