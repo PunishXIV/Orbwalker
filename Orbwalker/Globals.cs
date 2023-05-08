@@ -16,5 +16,5 @@ global using static ECommons.GenericHelpers;
 global using System.Numerics;
 global using ECommons.ImGuiMethods;
 global using ECommons.Schedulers;
-global using static Unmoveable.Orbwalker;
+global using static Orbwalker.Orbwalker;
 global using Dalamud.Game.ClientState.Conditions;

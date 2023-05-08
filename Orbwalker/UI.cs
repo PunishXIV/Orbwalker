@@ -7,7 +7,7 @@ using Orbwalker;
 using System.IO;
 using System.Windows.Forms;
 
-namespace Unmoveable
+namespace Orbwalker
 {
     internal unsafe static class UI
     {

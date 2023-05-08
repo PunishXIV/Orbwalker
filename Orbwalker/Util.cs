@@ -1,4 +1,4 @@
-﻿using ECommons;
+using ECommons;
 using ECommons.ExcelServices;
 using ECommons.GameHelpers;
 using ECommons.MathHelpers;
@@ -13,7 +13,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Unmoveable
+namespace Orbwalker
 {
     internal unsafe static class Util
     {
@@ -22,26 +22,25 @@ namespace Unmoveable
             get
             {
                 var cd = ActionManager.Instance()->GetRecastGroupDetail(57);
-                if (cd->IsActive == 0) return 0;
-                return cd->Total - cd->Elapsed;
+                return cd->IsActive == 0 ? 0 : cd->Total - cd->Elapsed;
             }
         }
 
         internal static float GetRCorGDC()
         {
-            float ret1 = 0;
-            if(Player.Object.CastActionId != 0)
-            {
-                ret1 = Player.Object.TotalCastTime - Player.Object.CurrentCastTime;
-            }
-            return Math.Max(ret1, GCD);
+            float castTimeRemaining = Player.Object.CastActionId != 0
+                ? Player.Object.TotalCastTime - Player.Object.CurrentCastTime
+                : 0;
+        
+            return Math.Max(castTimeRemaining, GCD);
         }
 
         internal static bool CanUsePlugin()
         {
             if (!Player.Available) return false;
-            if (((Job)Player.Object.ClassJob.Id).EqualsAny(Job.SMN, Job.RDM, Job.BLM, Job.WHM, Job.SCH, Job.AST, Job.SGE, Job.RPR, Job.SAM, Job.BLU)) return true;
-            return false;
+
+            Job currentJob = (Job)Player.Object.ClassJob.Id;
+            return currentJob.EqualsAny(Job.SMN, Job.RDM, Job.BLM, Job.WHM, Job.SCH, Job.AST, Job.SGE, Job.RPR, Job.SAM, Job.BLU);
         }
 
         internal static Vector2 GetSize(this TextureWrap t, float height)
@@ -51,17 +50,23 @@ namespace Unmoveable
 
         internal static bool IsActionCastable(uint id)
         {
-            return Svc.Data.GetExcelSheet<Lumina.Excel.GeneratedSheets.Action>().GetRow(id)?.Cast100ms > 0 && ActionManager.GetAdjustedCastTime(ActionType.Spell, ActionManager.Instance()->GetAdjustedActionId(id)) > 0;
+            var actionSheet = Svc.Data.GetExcelSheet<Lumina.Excel.GeneratedSheets.Action>();
+            var actionRow = actionSheet.GetRow(id);
+
+            if (actionRow?.Cast100ms <= 0)
+            {
+                return false;
+            }
+
+            var actionManager = ActionManager.Instance();
+            var adjustedCastTime = ActionManager.GetAdjustedCastTime(ActionType.Spell, id);
+
+            return adjustedCastTime > 0;
         }
 
         internal static bool IsMouseMoveOrdered()
         {
-            /*if (Bitmask.IsBitSet(User32.GetKeyState((int)Keys.W), 15)) return true;
-            if (Bitmask.IsBitSet(User32.GetKeyState((int)Keys.A), 15)) return true;
-            if (Bitmask.IsBitSet(User32.GetKeyState((int)Keys.S), 15)) return true;
-            if (Bitmask.IsBitSet(User32.GetKeyState((int)Keys.D), 15)) return true;*/
-            if (IsKeyPressed(Keys.LButton) && IsKeyPressed(Keys.RButton)) return true;
-            return false;
+            return IsKeyPressed(Keys.LButton) && IsKeyPressed(Keys.RButton);
         }
     }
 }
