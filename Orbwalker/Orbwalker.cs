@@ -124,16 +124,18 @@ namespace Orbwalker
             return IsCasting() || DelayedAction != null;
         }
 
+        const float GCDCutoff = 0.1f;
+
         private bool IsCastableActionWithLowGCD()
         {
             var qid = ActionQueue.Get()->ActionID;
-            return qid != 0 && Util.IsActionCastable(qid) && Util.GetRCorGDC() < 0.01;
+            return qid != 0 && Util.IsActionCastable(qid) && Util.GetRCorGDC() < GCDCutoff;
         }
 
         private bool IsInCombatWithLowGCDAndNotUnusableAction()
         {
             var qid = ActionQueue.Get()->ActionID;
-            return P.Config.ForceStopMoveCombat && Svc.Condition[ConditionFlag.InCombat] && Util.GetRCorGDC() < 0.01 && !(qid != 0 && !Util.IsActionCastable(qid));
+            return P.Config.ForceStopMoveCombat && Svc.Condition[ConditionFlag.InCombat] && Util.GetRCorGDC() < GCDCutoff && !(qid != 0 && !Util.IsActionCastable(qid));
         }
 
         private void HandleMovementPrevention()
