@@ -6,11 +6,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Unmoveable
+namespace Orbwalker
 {
     internal class Overlay : Window
     {
-        public Overlay() : base("UnmoveableOverlay", ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.AlwaysAutoResize, true)
+        public Overlay() : base("OrbwalkerOverlay", ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.AlwaysAutoResize, true)
         {
             this.RespectCloseHotkey = false;
             this.IsOpen = true;
