@@ -94,6 +94,7 @@ namespace Unmoveable
                 }
                 //DuoLog.Information($"{GCD}");
                 var qid = ActionQueue.Get()->ActionID;
+                qid = ActionManager.Instance()->GetAdjustedActionId(qid);
                 if ((IsCasting() || DelayedAction != null || (qid != 0 && Util.IsActionCastable(qid) && Util.GetRCorGDC() < 0.01) || (P.Config.ForceStopMoveCombat && Svc.Condition[ConditionFlag.InCombat] && Util.GetRCorGDC() < 0.01 && !(qid != 0 && !Util.IsActionCastable(qid)))) && !ShouldUnlock)
                 {
                     if ((!P.Config.DisableMouseDisabling && Util.IsMouseMoveOrdered()) || P.Config.ControllerMode)
