@@ -46,9 +46,10 @@ namespace Orbwalker
 
         internal bool IsUnlockKeyHeld()
         {
+            if (Framework.Instance()->WindowInactive) return false;
             return P.Config.ControllerMode 
                 ? P.Config.ReleaseButton != Dalamud.Game.ClientState.GamePad.GamepadButtons.None && (GamePad.IsButtonPressed(P.Config.ReleaseButton) || GamePad.IsButtonHeld(P.Config.ReleaseButton)) 
-                : !Framework.Instance()->WindowInactive && P.Config.ReleaseKey != Keys.None && IsKeyPressed(P.Config.ReleaseKey);
+                : P.Config.ReleaseKey != Keys.None && IsKeyPressed(P.Config.ReleaseKey);
         }
 
         private void Framework_Update(Dalamud.Game.Framework framework)
