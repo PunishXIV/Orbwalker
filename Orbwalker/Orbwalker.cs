@@ -44,8 +44,8 @@ namespace Unmoveable
 
         bool IsCasting()
         {
-            return P.Config.IsSlideAuto 
-                ? Svc.Condition[ConditionFlag.Casting] 
+            return P.Config.IsSlideAuto
+                ? Svc.Condition[ConditionFlag.Casting]
                 : Player.Object.IsCasting && Player.Object.TotalCastTime - Player.Object.CurrentCastTime > Config.Threshold;
         }
 
@@ -53,7 +53,7 @@ namespace Unmoveable
         {
             return !Framework.Instance()->WindowInactive && P.Config.ReleaseKey != Keys.None && IsKeyPressed(P.Config.ReleaseKey);
         }
-
+        
         private void Framework_Update(Dalamud.Game.Framework framework)
         {
             PerformDelayedAction();
@@ -129,13 +129,13 @@ namespace Unmoveable
         private bool IsCastableActionWithLowGCD()
         {
             var qid = ActionQueue.Get()->ActionID;
-            return qid != 0 && Util.IsActionCastable(qid) && Util.GCD < 0.1;
+            return qid != 0 && Util.IsActionCastable(qid) && Util.GetRCorGDC() < 0.01;
         }
 
         private bool IsInCombatWithLowGCDAndNotUnusableAction()
         {
             var qid = ActionQueue.Get()->ActionID;
-            return P.Config.ForceStopMoveCombat && Svc.Condition[ConditionFlag.InCombat] && Util.GCD < 0.1 && !(qid != 0 && !Util.IsActionCastable(qid));
+            return P.Config.ForceStopMoveCombat && Svc.Condition[ConditionFlag.InCombat] && Util.GetRCorGDC() < 0.01 && !(qid != 0 && !Util.IsActionCastable(qid));
         }
 
         private void HandleMovementPrevention()
@@ -186,7 +186,7 @@ namespace Unmoveable
             }
         }
 
-	public void Dispose()
+        public void Dispose()
         {
             Svc.Framework.Update -= Framework_Update;
             MoveManager.EnableMoving();
