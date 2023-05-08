@@ -1,4 +1,4 @@
-﻿using Dalamud.Game.ClientState.Keys;
+using Dalamud.Game.ClientState.Keys;
 using Dalamud.Plugin;
 using ECommons.Configuration;
 using ECommons.GameHelpers;
@@ -44,92 +44,32 @@ namespace Unmoveable
 
         bool IsCasting()
         {
-            if (P.Config.IsSlideAuto)
-            {
-                return Svc.Condition[ConditionFlag.Casting];
-            }
-            else
-            {
-                return Player.Object.IsCasting && Player.Object.TotalCastTime - Player.Object.CurrentCastTime > Config.Threshold;
-            }
+            return P.Config.IsSlideAuto 
+                ? Svc.Condition[ConditionFlag.Casting] 
+                : Player.Object.IsCasting && Player.Object.TotalCastTime - Player.Object.CurrentCastTime > Config.Threshold;
         }
 
         internal bool IsUnlockKeyHeld()
         {
-            return !Framework.Instance()->WindowInactive && (P.Config.ReleaseKey != Keys.None && IsKeyPressed(P.Config.ReleaseKey));
+            return !Framework.Instance()->WindowInactive && P.Config.ReleaseKey != Keys.None && IsKeyPressed(P.Config.ReleaseKey);
         }
 
         private void Framework_Update(Dalamud.Game.Framework framework)
         {
-            if(DelayedAction != null && DelayedAction.actionId != 0 && AgentMap.Instance()->IsPlayerMoving == 0)
-            {
-                if (Player.Available)
-                {
-                    var a = ActionManager.Instance();
-                    PluginLog.Debug($"Using action {DelayedAction}");
-                    try
-                    {
-                        DelayedAction.Use();
-                    }
-                    catch (Exception e)
-                    {
-                        e.Log();
-                    }
-                }
-                DelayedAction = null;
-            }
+            PerformDelayedAction();
+
             if (P.Config.Enabled && Util.CanUsePlugin())
             {
-                if (P.Config.IsHoldToRelease)
+                UpdateShouldUnlock();
+
+                if (ShouldPreventMovement() && !ShouldUnlock)
                 {
-                    ShouldUnlock = P.Config.UnlockPermanently || IsUnlockKeyHeld();
+                    HandleMovementPrevention();
                 }
                 else
                 {
-                    if (!IsReleaseButtonHeld && IsUnlockKeyHeld())
-                    {
-                        P.Config.UnlockPermanently = !P.Config.UnlockPermanently;
-                    }
-                    ShouldUnlock = P.Config.UnlockPermanently;
-                    IsReleaseButtonHeld = IsUnlockKeyHeld();
-                }
-                //DuoLog.Information($"{GCD}");
-                var qid = ActionQueue.Get()->ActionID;
-                if ((IsCasting() || DelayedAction != null || (qid != 0 && Util.IsActionCastable(qid) && Util.GetRCorGDC() < 0.01) || (P.Config.ForceStopMoveCombat && Svc.Condition[ConditionFlag.InCombat] && Util.GetRCorGDC() < 0.01 && !(qid != 0 && !Util.IsActionCastable(qid)))) && !ShouldUnlock)
-                {
-                    if (!P.Config.DisableMouseDisabling && Util.IsMouseMoveOrdered())
-                    {
-                        MoveManager.DisableMoving();
-                    }
-                    else
-                    {
-                        MoveManager.EnableMoving();
-                    }
-                    P.Config.MoveKeys.Each(x =>
-                    {
-                        if (Svc.KeyState.GetRawValue(x) != 0)
-                        {
-                            Svc.KeyState.SetRawValue(x, 0);
-                            WasCancelled = true;
-                            InternalLog.Debug($"Cancelling key {x}");
-                        }
-                    });
-                }
-                else
-                {
-                    MoveManager.EnableMoving();
-                    if (WasCancelled)
-                    {
-                        WasCancelled = false;
-                        P.Config.MoveKeys.Each(x =>
-                        {
-                            if (IsKeyPressed((Keys)x))
-                            {
-                                DalamudReflector.SetKeyState(x, 3);
-                                InternalLog.Debug($"Reenabling key {x}");
-                            }
-                        });
-                    }
+                    EnableMoving();
+                    ResetCancelledMoveKeys();
                 }
             }
             else
@@ -138,7 +78,101 @@ namespace Unmoveable
             }
         }
 
-        public void Dispose()
+        private void PerformDelayedAction()
+        {
+            if (DelayedAction != null && DelayedAction.actionId != 0 && AgentMap.Instance()->IsPlayerMoving == 0 &&
+                Player.Available)
+            {
+                var actionManager = ActionManager.Instance();
+                PluginLog.Debug($"Using action {DelayedAction}");
+                try
+                {
+                    DelayedAction.Use();
+                }
+                catch (Exception e)
+                {
+                    e.Log();
+                }
+
+                DelayedAction = null;
+            }
+        }
+
+        private void UpdateShouldUnlock()
+        {
+            if (P.Config.IsHoldToRelease)
+            {
+                ShouldUnlock = P.Config.UnlockPermanently || IsUnlockKeyHeld();
+            }
+            else
+            {
+                if (!IsReleaseButtonHeld && IsUnlockKeyHeld())
+                {
+                    P.Config.UnlockPermanently = !P.Config.UnlockPermanently;
+                }
+
+                ShouldUnlock = P.Config.UnlockPermanently;
+                IsReleaseButtonHeld = IsUnlockKeyHeld();
+            }
+        }
+
+        private bool ShouldPreventMovement()
+        {
+            var qid = ActionQueue.Get()->ActionID;
+            return (IsCasting() || DelayedAction != null || (qid != 0 && Util.IsActionCastable(qid) && GCD < 0.1) ||
+                    (P.Config.ForceStopMoveCombat && Svc.Condition[ConditionFlag.InCombat] && GCD < 0.1 &&
+                     !(qid != 0 && !Util.IsActionCastable(qid))));
+        }
+
+        private void HandleMovementPrevention()
+        {
+            if (!P.Config.DisableMouseDisabling && Util.IsMouseMoveOrdered())
+            {
+                MoveManager.DisableMoving();
+            }
+            else
+            {
+                MoveManager.EnableMoving();
+            }
+
+            CancelMoveKeys();
+        }
+
+        private void CancelMoveKeys()
+        {
+            P.Config.MoveKeys.Each(x =>
+            {
+                if (Svc.KeyState.GetRawValue(x) != 0)
+                {
+                    Svc.KeyState.SetRawValue(x, 0);
+                    WasCancelled = true;
+                    InternalLog.Debug($"Cancelling key {x}");
+                }
+            });
+        }
+
+        private void EnableMoving()
+        {
+            MoveManager.EnableMoving();
+        }
+
+        private void ResetCancelledMoveKeys()
+        {
+            if (WasCancelled)
+            {
+                WasCancelled = false;
+                P.Config.MoveKeys.Each(x =>
+                {
+                    if (IsKeyPressed((Keys)x))
+                    {
+                        DalamudReflector.SetKeyState(x, 3);
+                        InternalLog.Debug($"Reenabling key {x}");
+                    }
+                });
+            }
+        }
+
+	public void Dispose()
         {
             Svc.Framework.Update -= Framework_Update;
             MoveManager.EnableMoving();
