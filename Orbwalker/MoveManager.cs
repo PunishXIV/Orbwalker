@@ -11,7 +11,7 @@ namespace Unmoveable
         internal static readonly int[] BlockedKeys = new int[] { 321, 322, 323, 324, 325, 326 };
         internal static bool MovingDisabled { get; private set; } = false;
 
-        internal static void EnableMoving()
+        internal unsafe static void EnableMoving()
         {
             if (MovingDisabled)
             {

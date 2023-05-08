@@ -1,16 +1,12 @@
-﻿using Dalamud.Game.ClientState.Keys;
-using Dalamud.Plugin;
-using ECommons.Configuration;
+﻿using ECommons.Configuration;
 using ECommons.GameHelpers;
-using ECommons.MathHelpers;
+using ECommons.Gamepad;
 using ECommons.Reflection;
 using ECommons.SimpleGui;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using Orbwalker;
-using PInvoke;
-using System.Reflection.Metadata.Ecma335;
 using System.Windows.Forms;
 
 namespace Unmoveable
@@ -56,12 +52,15 @@ namespace Unmoveable
 
         internal bool IsUnlockKeyHeld()
         {
-            return !Framework.Instance()->WindowInactive && (P.Config.ReleaseKey != Keys.None && IsKeyPressed(P.Config.ReleaseKey));
+            if (P.Config.ControllerMode)
+                return P.Config.ReleaseButton != Dalamud.Game.ClientState.GamePad.GamepadButtons.None && GamePad.IsButtonPressed(P.Config.ReleaseButton);
+            else
+                return !Framework.Instance()->WindowInactive && (P.Config.ReleaseKey != Keys.None && IsKeyPressed(P.Config.ReleaseKey));
         }
 
         private void Framework_Update(Dalamud.Game.Framework framework)
         {
-            if(DelayedAction != null && DelayedAction.actionId != 0 && AgentMap.Instance()->IsPlayerMoving == 0)
+            if (DelayedAction != null && DelayedAction.actionId != 0 && AgentMap.Instance()->IsPlayerMoving == 0)
             {
                 if (Player.Available)
                 {
@@ -97,7 +96,7 @@ namespace Unmoveable
                 var qid = ActionQueue.Get()->ActionID;
                 if ((IsCasting() || DelayedAction != null || (qid != 0 && Util.IsActionCastable(qid) && Util.GetRCorGDC() < 0.01) || (P.Config.ForceStopMoveCombat && Svc.Condition[ConditionFlag.InCombat] && Util.GetRCorGDC() < 0.01 && !(qid != 0 && !Util.IsActionCastable(qid)))) && !ShouldUnlock)
                 {
-                    if (!P.Config.DisableMouseDisabling && Util.IsMouseMoveOrdered())
+                    if ((!P.Config.DisableMouseDisabling && Util.IsMouseMoveOrdered()) || P.Config.ControllerMode)
                     {
                         MoveManager.DisableMoving();
                     }
@@ -105,6 +104,7 @@ namespace Unmoveable
                     {
                         MoveManager.EnableMoving();
                     }
+
                     P.Config.MoveKeys.Each(x =>
                     {
                         if (Svc.KeyState.GetRawValue(x) != 0)
@@ -114,6 +114,7 @@ namespace Unmoveable
                             InternalLog.Debug($"Cancelling key {x}");
                         }
                     });
+                    
                 }
                 else
                 {

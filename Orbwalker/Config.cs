@@ -1,4 +1,5 @@
-﻿using Dalamud.Game.ClientState.Keys;
+﻿using Dalamud.Game.ClientState.GamePad;
+using Dalamud.Game.ClientState.Keys;
 using ECommons.Configuration;
 using System;
 using System.Collections.Generic;
@@ -13,6 +14,8 @@ namespace Unmoveable
     {
         public bool ForceStopMoveCombat = false;
         public Keys ReleaseKey = Keys.LControlKey;
+        public bool ControllerMode = false; 
+        public GamepadButtons ReleaseButton = GamepadButtons.L1;
         public float SizeMod = 1f;
         public bool UnlockPermanently = false;
         public bool Enabled = true;
@@ -25,6 +28,7 @@ namespace Unmoveable
             VirtualKey.S,
             VirtualKey.D
         };
+
         public bool DisplayBattle = true;
         public bool DisplayDuty = true;
         public bool DisplayAlways = false;

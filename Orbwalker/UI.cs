@@ -1,16 +1,10 @@
-﻿using Dalamud.Interface.Components;
+﻿using Dalamud.Game.ClientState.GamePad;
+using Dalamud.Interface.Components;
 using ECommons.GameFunctions;
-using ECommons.MathHelpers;
+using ECommons.Gamepad;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using Orbwalker;
-using PInvoke;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Unmoveable
@@ -29,14 +23,14 @@ namespace Unmoveable
 
         static void Spacing(bool cont = false)
         {
-            ImGuiEx.TextV($" {(cont? "├": "└")} ");
+            ImGuiEx.TextV($" {(cont ? "├" : "└")} ");
             ImGui.SameLine();
         }
 
         static void Settings()
         {
             var cur = ImGui.GetCursorPos();
-            if(ThreadLoadImageHandler.TryGetTextureWrap(Path.Combine(Svc.PluginInterface.AssemblyLocation.DirectoryName, "res", "q.png"), out var t))
+            if (ThreadLoadImageHandler.TryGetTextureWrap(Path.Combine(Svc.PluginInterface.AssemblyLocation.DirectoryName, "res", "q.png"), out var t))
             {
                 ImGui.SetCursorPosX(ImGui.GetContentRegionAvail().X - 20);
                 ImGui.Image(t.ImGuiHandle, new(20, 20));
@@ -51,8 +45,8 @@ namespace Unmoveable
                 }
             }
             ImGui.SetCursorPos(cur);
-            
-            if(ImGui.Checkbox($"Enable Orbwalker", ref P.Config.Enabled))
+
+            if (ImGui.Checkbox($"Enable Orbwalker", ref P.Config.Enabled))
             {
                 P.Memory.EnableDisableBuffer();
             }
@@ -70,7 +64,7 @@ namespace Unmoveable
             }
             ImGuiEx.Text($"Orbwalking Mode:");
             ImGuiComponents.HelpMarker("Switch between the two modes. \"Slidecast\" mode is the default and simply prevents player movement until the slidecast window is available, locking movement again to begin the next cast. You must be stationary for the first cast in most cases. \"Slidelock\" mode on the otherhand permanently locks the player from moving while in combat and only allows for movement during the slidecast window. The movement release key is the only way to enable movement when this mode is used.");
-            Spacing(); 
+            Spacing();
             if (ImGui.RadioButton("Slidecast", !P.Config.ForceStopMoveCombat))
             {
                 P.Config.ForceStopMoveCombat = false;
@@ -81,13 +75,18 @@ namespace Unmoveable
                 P.Config.ForceStopMoveCombat = true;
             }
             ImGui.SetNextItemWidth(200f);
-            DrawKeybind("Movement Release Key", ref P.Config.ReleaseKey);
+            ImGui.Checkbox("Controller Mode", ref P.Config.ControllerMode);
+
+            if (P.Config.ControllerMode)
+                DrawKeybind("Movement Release Button", ref P.Config.ReleaseButton);
+            else
+                DrawKeybind("Movement Release Key", ref P.Config.ReleaseKey);
             ImGuiComponents.HelpMarker("Bind a key to instantly unlock player movement and cancel any channeling cast. Note that movement is only enabled whilst the key is held, therefore a mouse button is recommended.");
             ImGui.Checkbox($"Permanently Release", ref P.Config.UnlockPermanently);
             ImGuiComponents.HelpMarker("Releases player movement - used primarily by the release key setting above.");
             ImGuiEx.Text($"Release Key Mode:");
             ImGuiComponents.HelpMarker("Switches the movement release key from needing to be held, to becoming a toggle.");
-            Spacing(); 
+            Spacing();
             ImGuiEx.RadioButtonBool("Hold", "Toggle", ref P.Config.IsHoldToRelease, true);
 
             if (ImGui.Checkbox($"Buffer Initial Cast (BETA)", ref P.Config.Buffer))
@@ -96,20 +95,22 @@ namespace Unmoveable
             }
             ImGuiComponents.HelpMarker($"Removes the requirement for the player to be stationary when channeling the first cast by buffering it until movement is halted. This setting may cause strange behavior with plugins such as Redirect or ReAction, or prevent their options from working at all, be warned!");
 
-            ImGui.Checkbox($"Enable Mouse Button Release", ref P.Config.DisableMouseDisabling);
-            ImGuiComponents.HelpMarker("Allows emergency movement via holding down MB1 and MB2 simultaneously.");
-            ImGuiEx.TextV($"Movement keys:");
-            ImGui.SameLine();
-            ImGuiEx.SetNextItemWidth(0.8f);
-            if (ImGui.BeginCombo($"##movekeys", $"{P.Config.MoveKeys.Print()}"))
+            if (!P.Config.ControllerMode)
             {
-                foreach (var x in Svc.KeyState.GetValidVirtualKeys())
+                ImGui.Checkbox($"Enable Mouse Button Release", ref P.Config.DisableMouseDisabling);
+                ImGuiComponents.HelpMarker("Allows emergency movement via holding down MB1 and MB2 simultaneously.");
+                ImGuiEx.TextV($"Movement keys:");
+                ImGui.SameLine();
+                ImGuiEx.SetNextItemWidth(0.8f);
+                if (ImGui.BeginCombo($"##movekeys", $"{P.Config.MoveKeys.Print()}"))
                 {
-                    ImGuiEx.CollectionCheckbox($"{x}", x, P.Config.MoveKeys);
+                    foreach (var x in Svc.KeyState.GetValidVirtualKeys())
+                    {
+                        ImGuiEx.CollectionCheckbox($"{x}", x, P.Config.MoveKeys);
+                    }
+                    ImGui.EndCombo();
                 }
-                ImGui.EndCombo();
             }
-
             ImGuiGroup.EndGroupBox();
 
             ImGuiEx.Text($"Overlay");
@@ -188,6 +189,71 @@ namespace Unmoveable
                 if (ImGuiEx.IconButton(FontAwesomeIcon.Trash))
                 {
                     key = Keys.None;
+                    ret = true;
+                }
+            }
+            ImGui.PopID();
+            return ret;
+        }
+
+        static bool DrawKeybind(string text, ref GamepadButtons key)
+        {
+            bool ret = false;
+            ImGui.PushID(text);
+            ImGuiEx.Text($"{text}:");
+            ImGui.Dummy(new(20, 1));
+            ImGui.SameLine();
+            ImGui.SetNextItemWidth(200f);
+            if (ImGui.BeginCombo("##inputKey", $"{GamePad.ControllerButtons[key]}"))
+            {
+                if (text == KeyInputActive)
+                {
+                    ImGuiEx.Text(ImGuiColors.DalamudYellow, $"Now press new key...");
+                    foreach (var x in GamePad.ControllerButtons)
+                    {
+                        if (GamePad.IsButtonPressed(x.Key))
+                        {
+                            KeyInputActive = null;
+                            key = x.Key;
+                            ret = true;
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    if (ImGui.Selectable("Auto-detect new key", false, ImGuiSelectableFlags.DontClosePopups))
+                    {
+                        KeyInputActive = text;
+                    }
+                    ImGuiEx.Text($"Select key manually:");
+                    ImGuiEx.SetNextItemFullWidth();
+                    if (ImGui.BeginCombo("##selkeyman", GamePad.ControllerButtons[key]))
+                    {
+                        foreach (var button in GamePad.ControllerButtons)
+                        {
+                            if (ImGui.Selectable($"{button.Value}", button.Key == key))
+                                key = button.Key;
+                        }
+
+                        ImGui.EndCombo();
+                    }
+                }
+                ImGui.EndCombo();
+            }
+            else
+            {
+                if (text == KeyInputActive)
+                {
+                    KeyInputActive = null;
+                }
+            }
+            if (key != GamepadButtons.None)
+            {
+                ImGui.SameLine();
+                if (ImGuiEx.IconButton(FontAwesomeIcon.Trash))
+                {
+                    key = GamepadButtons.None;
                     ret = true;
                 }
             }
