@@ -51,6 +51,7 @@ namespace Orbwalker
         internal static bool IsActionCastable(uint id)
         {
             var actionSheet = Svc.Data.GetExcelSheet<Lumina.Excel.GeneratedSheets.Action>();
+            id = ActionManager.Instance()->GetAdjustedActionId(id);
             var actionRow = actionSheet.GetRow(id);
 
             if (actionRow?.Cast100ms <= 0)

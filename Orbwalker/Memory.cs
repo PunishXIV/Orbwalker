@@ -45,7 +45,6 @@ namespace Orbwalker
             {
                 try
                 {
-                    acId = am->GetAdjustedActionId(acId);
                     InternalLog.Verbose($"{type}, {acId}, {target}");
                     if (P.DelayedAction == null && type == ActionType.Spell && Util.IsActionCastable(acId) && Util.GCD == 0 && AgentMap.Instance()->IsPlayerMoving != 0 && !am->ActionQueued)
                     {
