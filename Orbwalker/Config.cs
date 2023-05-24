@@ -21,6 +21,7 @@ namespace Orbwalker
         public bool Enabled = true;
         public bool Buffer = false;
         public bool DisableMouseDisabling = false;
+        public string PluginLanguage = null;
         public HashSet<VirtualKey> MoveKeys = new()
         {
             VirtualKey.W,

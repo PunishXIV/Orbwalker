@@ -84,6 +84,9 @@
     </ItemGroup>
 
     <ItemGroup>
+        <None Update="LanguageChinese.ini">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
         <None Update="$(MSBuildProjectName).json">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>

@@ -7,6 +7,7 @@ using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using System.Windows.Forms;
+using ECommons.LanguageHelpers;
 
 namespace Orbwalker
 {
@@ -34,6 +35,8 @@ namespace Orbwalker
                 Svc.Framework.Update += Framework_Update;
                 EzConfigGui.WindowSystem.AddWindow(new Overlay());
                 Memory.EnableDisableBuffer();
+                Localization.Init((Svc.PluginInterface.GetPluginConfig() is Config cfg)?cfg.PluginLanguage : Localization.GameLanguageString);
+
             });
         }
 
