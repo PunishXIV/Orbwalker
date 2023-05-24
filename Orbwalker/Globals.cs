@@ -18,3 +18,4 @@ global using ECommons.ImGuiMethods;
 global using ECommons.Schedulers;
 global using static Orbwalker.Orbwalker;
 global using Dalamud.Game.ClientState.Conditions;
+global using static ECommons.LanguageHelpers.Localization;
