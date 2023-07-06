@@ -20,8 +20,8 @@ namespace Orbwalker
                 ("Settings", Settings, null, true),
                 ("Extras", Extras, null, true),
                 ("About", () => AboutTab.Draw(P), null, true),
-                ("Debug", Debug, ImGuiColors.DalamudGrey3, true),
-                InternalLog.ImGuiTab()
+                ("Debug".NullWhenFalse(C.Debug), Debug, ImGuiColors.DalamudGrey3, true),
+                InternalLog.ImGuiTab(C.Debug)
 
                 );
         }
@@ -92,6 +92,13 @@ namespace Orbwalker
             {
                 P.Config.ForceStopMoveCombat = true;
             }
+
+            if (ImGui.Checkbox($"Buffer Initial Cast", ref P.Config.Buffer))
+            {
+                P.Memory.EnableDisableBuffer();
+            }
+            ImGuiComponents.HelpMarker($"Removes the requirement for the player to be stationary when channeling the first cast by buffering it until movement is halted. This setting may cause strange behavior with plugins such as Redirect or ReAction, or prevent their options from working at all, be warned!");
+
             ImGui.SetNextItemWidth(200f);
             ImGui.Checkbox("Controller Mode", ref P.Config.ControllerMode);
 
@@ -106,12 +113,6 @@ namespace Orbwalker
             ImGuiComponents.HelpMarker("Switches the movement release key from needing to be held, to becoming a toggle.");
             Spacing();
             ImGuiEx.RadioButtonBool("Hold", "Toggle", ref P.Config.IsHoldToRelease, true);
-
-            if (ImGui.Checkbox($"Buffer Initial Cast (BETA)", ref P.Config.Buffer))
-            {
-                P.Memory.EnableDisableBuffer();
-            }
-            ImGuiComponents.HelpMarker($"Removes the requirement for the player to be stationary when channeling the first cast by buffering it until movement is halted. This setting may cause strange behavior with plugins such as Redirect or ReAction, or prevent their options from working at all, be warned!");
 
             if (!P.Config.ControllerMode)
             {

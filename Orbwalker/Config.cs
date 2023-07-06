@@ -41,5 +41,7 @@ namespace Orbwalker
         public bool PreventTCJ = false;
         public bool PreventFlame = false;
         public bool PreventImprov = false;
+
+        public bool Debug = false;
     }
 }
