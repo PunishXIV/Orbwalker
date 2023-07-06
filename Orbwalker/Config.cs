@@ -36,5 +36,10 @@ namespace Orbwalker
         public bool IsSlideAuto = true;
         public float Threshold = 0.5f;
         public int CastHold = 100;
+
+        public bool PreventPassage = false;
+        public bool PreventTCJ = false;
+        public bool PreventFlame = false;
+        public bool PreventImprov = false;
     }
 }

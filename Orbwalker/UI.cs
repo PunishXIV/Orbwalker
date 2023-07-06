@@ -4,8 +4,11 @@ using ECommons.GameFunctions;
 using ECommons.Gamepad;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using Orbwalker;
+using PunishLib;
+using PunishLib.ImGuiMethods;
 using System.IO;
 using System.Windows.Forms;
+using ThreadLoadImageHandler = ECommons.ImGuiMethods.ThreadLoadImageHandler;
 
 namespace Orbwalker
 {
@@ -15,10 +18,25 @@ namespace Orbwalker
         {
             ImGuiEx.EzTabBar("Default",
                 ("Settings", Settings, null, true),
+                ("Extras", Extras, null, true),
+                ("About", () => AboutTab.Draw(P), null, true),
                 ("Debug", Debug, ImGuiColors.DalamudGrey3, true),
                 InternalLog.ImGuiTab()
 
                 );
+        }
+
+        static void Extras()
+        {
+
+            ImGuiEx.Text($"Job Specific Options");
+            ImGuiGroup.BeginGroupBox();
+            ImGuiEx.Text($"Block movement when these actions are active:");
+            ImGuiEx.Spacing();  ImGui.Checkbox("Passage of Arms (PLD)", ref C.PreventPassage);
+            ImGuiEx.Spacing(); ImGui.Checkbox("Ten Chi Jin (NIN)", ref C.PreventTCJ);
+            ImGuiEx.Spacing(); ImGui.Checkbox("Flamethrower (MCH)", ref C.PreventFlame);
+            ImGuiEx.Spacing(); ImGui.Checkbox("Improvisation (DNC)", ref C.PreventImprov);
+            ImGuiGroup.EndGroupBox();
         }
 
         static void Spacing(bool cont = false)

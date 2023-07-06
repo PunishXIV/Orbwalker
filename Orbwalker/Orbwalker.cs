@@ -6,6 +6,7 @@ using ECommons.SimpleGui;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
+using PunishLib;
 using System.Windows.Forms;
 
 namespace Orbwalker
@@ -20,11 +21,14 @@ namespace Orbwalker
         internal bool ShouldUnlock = false;
         bool IsReleaseButtonHeld = false;
         internal DelayedAction DelayedAction = null;
+        internal static Config C => P.Config;
+        internal long BlockMovementUntil = 0;
 
         public Orbwalker(DalamudPluginInterface pluginInterface)
         {
             P = this;
             ECommonsMain.Init(pluginInterface, this, Module.DalamudReflector);
+            PunishLibMain.Init(pluginInterface, this, null, PunishOption.DefaultKoFi);
             new TickScheduler(delegate
             {
                 Memory = new();
@@ -114,9 +118,18 @@ namespace Orbwalker
             }
         }
 
+        internal bool IsStronglyLocked => Environment.TickCount64 < BlockMovementUntil || PlayerHasNoMoveStatuses();
+
         private bool ShouldPreventMovement()
         {
-            return IsCastingOrDelayedAction() || IsCastableActionWithLowGCD() || IsInCombatWithLowGCDAndNotUnusableAction();
+            return IsCastingOrDelayedAction() || IsCastableActionWithLowGCD() || IsInCombatWithLowGCDAndNotUnusableAction() || IsStronglyLocked;
+        }
+
+        bool PlayerHasNoMoveStatuses()
+        {
+            var blockList = Util.GetMovePreventionStatuses();
+            if (Player.Available && Player.Status.Any(x => x.StatusId.EqualsAny(blockList))) return true;
+            return false;
         }
 
         private bool IsCastingOrDelayedAction()
@@ -140,7 +153,7 @@ namespace Orbwalker
 
         private void HandleMovementPrevention()
         {
-            if ((!P.Config.DisableMouseDisabling && Util.IsMouseMoveOrdered()) || P.Config.ControllerMode)
+            if ((!P.Config.DisableMouseDisabling && Util.IsMouseMoveOrdered()) || P.Config.ControllerMode || IsStronglyLocked)
             {
                 MoveManager.DisableMoving();
             }
