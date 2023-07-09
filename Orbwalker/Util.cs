@@ -60,7 +60,7 @@ namespace Orbwalker
             if (currentJob == Job.DNC && C.PreventImprov) return true;
             if (currentJob == Job.MCH && C.PreventFlame) return true;
             if (currentJob == Job.NIN && C.PreventTCJ) return true;
-            return currentJob.EqualsAny(Job.SMN, Job.RDM, Job.BLM, Job.WHM, Job.SCH, Job.AST, Job.SGE, Job.RPR, Job.SAM, Job.BLU);
+            return currentJob.EqualsAny(Job.SMN, Job.ACN, Job.RDM, Job.BLM, Job.THM, Job.WHM, Job.CNJ, Job.SCH, Job.AST, Job.SGE, Job.RPR, Job.SAM, Job.BLU);
         }
 
         internal static Vector2 GetSize(this TextureWrap t, float height)
