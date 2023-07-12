@@ -43,5 +43,9 @@ namespace Orbwalker
         public bool PreventImprov = false;
 
         public bool Debug = false;
+        public bool PVP = false;
+        public bool BlockTP = false;
+        public bool BlockReturn = false;
+        public bool BlockMount = false;
     }
 }

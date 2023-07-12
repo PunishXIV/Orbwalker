@@ -6,6 +6,7 @@ using ECommons.SimpleGui;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
+using Lumina.Excel.GeneratedSheets;
 using PunishLib;
 using System.Windows.Forms;
 
@@ -43,7 +44,13 @@ namespace Orbwalker
 
         bool IsCasting()
         {
-            return P.Config.IsSlideAuto
+            if (Player.Object.IsCasting)
+            {
+                if(Util.CheckTpRetMnt(Player.Object.CastActionId)) return false;
+                if (Player.Object.CastActionType == (byte)ActionType.Mount) return true;
+            }
+            
+            return C.IsSlideAuto
                 ? Svc.Condition[ConditionFlag.Casting]
                 : Player.Object.IsCasting && Player.Object.TotalCastTime - Player.Object.CurrentCastTime > Config.Threshold;
         }
@@ -51,16 +58,16 @@ namespace Orbwalker
         internal bool IsUnlockKeyHeld()
         {
             if (Framework.Instance()->WindowInactive) return false;
-            return P.Config.ControllerMode 
-                ? P.Config.ReleaseButton != Dalamud.Game.ClientState.GamePad.GamepadButtons.None && (GamePad.IsButtonPressed(P.Config.ReleaseButton) || GamePad.IsButtonHeld(P.Config.ReleaseButton)) 
-                : P.Config.ReleaseKey != Keys.None && IsKeyPressed(P.Config.ReleaseKey);
+            return C.ControllerMode 
+                ? C.ReleaseButton != Dalamud.Game.ClientState.GamePad.GamepadButtons.None && (GamePad.IsButtonPressed(C.ReleaseButton) || GamePad.IsButtonHeld(C.ReleaseButton)) 
+                : C.ReleaseKey != Keys.None && IsKeyPressed(C.ReleaseKey);
         }
 
         private void Framework_Update(Dalamud.Game.Framework framework)
         {
             PerformDelayedAction();
 
-            if (P.Config.Enabled && Util.CanUsePlugin())
+            if (C.Enabled && Util.CanUsePlugin())
             {
                 UpdateShouldUnlock();
 
@@ -102,18 +109,18 @@ namespace Orbwalker
 
         private void UpdateShouldUnlock()
         {
-            if (P.Config.IsHoldToRelease)
+            if (C.IsHoldToRelease)
             {
-                ShouldUnlock = P.Config.UnlockPermanently || IsUnlockKeyHeld();
+                ShouldUnlock = C.UnlockPermanently || IsUnlockKeyHeld();
             }
             else
             {
                 if (!IsReleaseButtonHeld && IsUnlockKeyHeld())
                 {
-                    P.Config.UnlockPermanently = !P.Config.UnlockPermanently;
+                    C.UnlockPermanently = !C.UnlockPermanently;
                 }
 
-                ShouldUnlock = P.Config.UnlockPermanently;
+                ShouldUnlock = C.UnlockPermanently;
                 IsReleaseButtonHeld = IsUnlockKeyHeld();
             }
         }
@@ -148,12 +155,12 @@ namespace Orbwalker
         private bool IsInCombatWithLowGCDAndNotUnusableAction()
         {
             var qid = ActionQueue.Get()->ActionID;
-            return P.Config.ForceStopMoveCombat && Svc.Condition[ConditionFlag.InCombat] && Util.GetRCorGDC() < GCDCutoff && !(qid != 0 && !Util.IsActionCastable(qid));
+            return C.ForceStopMoveCombat && Svc.Condition[ConditionFlag.InCombat] && Util.GetRCorGDC() < GCDCutoff && !(qid != 0 && !Util.IsActionCastable(qid));
         }
 
         private void HandleMovementPrevention()
         {
-            if ((!P.Config.DisableMouseDisabling && Util.IsMouseMoveOrdered()) || P.Config.ControllerMode || IsStronglyLocked)
+            if ((!C.DisableMouseDisabling && Util.IsMouseMoveOrdered()) || C.ControllerMode || IsStronglyLocked)
             {
                 MoveManager.DisableMoving();
             }
@@ -167,7 +174,7 @@ namespace Orbwalker
 
         private void CancelMoveKeys()
         {
-            P.Config.MoveKeys.Each(x =>
+            C.MoveKeys.Each(x =>
             {
                 if (Svc.KeyState.GetRawValue(x) != 0)
                 {
@@ -188,7 +195,7 @@ namespace Orbwalker
             if (WasCancelled)
             {
                 WasCancelled = false;
-                P.Config.MoveKeys.Each(x =>
+                C.MoveKeys.Each(x =>
                 {
                     if (IsKeyPressed((Keys)x))
                     {

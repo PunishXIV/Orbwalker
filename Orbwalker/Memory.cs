@@ -22,7 +22,7 @@ namespace Orbwalker
         {
             try
             {
-                if(Util.GetMovePreventionActions().Contains(actionId))
+                if (Util.GetMovePreventionActions().Contains(actionId))
                 {
                     P.BlockMovementUntil = Environment.TickCount64 + 1000;
                     PluginLog.Debug($"Blocking movement until {P.BlockMovementUntil} because of action {actionId}");
@@ -47,7 +47,7 @@ namespace Orbwalker
 
         internal void EnableDisableBuffer()
         {
-            var enabled = P.Config.Enabled && P.Config.Buffer;
+            var enabled = C.Enabled && C.Buffer;
             if(enabled && !UseActionHook.IsEnabled)
             {
                 UseActionHook.Enable();
@@ -62,12 +62,12 @@ namespace Orbwalker
 
         private bool UseActionDetour(ActionManager* am, ActionType type, uint acId, long target, uint a5, uint a6, uint a7, void* a8)
         {
-            if (P.Config.Enabled && P.Config.Buffer && !P.ShouldUnlock)
+            if (C.Enabled && C.Buffer && !P.ShouldUnlock)
             {
                 try
                 {
                     InternalLog.Verbose($"{type}, {acId}, {target}");
-                    if (P.DelayedAction == null && type == ActionType.Spell && Util.IsActionCastable(acId) && Util.GCD == 0 && AgentMap.Instance()->IsPlayerMoving != 0 && !am->ActionQueued)
+                    if (P.DelayedAction == null && type == ActionType.Spell && Util.IsActionCastable(acId) && Util.GCD == 0 && AgentMap.Instance()->IsPlayerMoving != 0 && !am->ActionQueued && !Util.CheckTpRetMnt(acId))
                     {
                         P.DelayedAction = new(acId, 0, target, a5, a6, a7, a8);
                         return false;

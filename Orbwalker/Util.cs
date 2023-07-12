@@ -17,6 +17,14 @@ namespace Orbwalker
 {
     internal unsafe static class Util
     {
+        internal static bool CheckTpRetMnt(uint acId)
+        {
+            if (acId == Data.Teleport && !C.BlockTP) return true;
+            if (acId == Data.Return && !C.BlockReturn) return true;
+            if (acId == Data.Mount && !C.BlockMount) return true;
+            return false;
+        }
+
         internal static IEnumerable<uint> GetMovePreventionActions()
         {
             if (C.PreventFlame) foreach (var x in Data.FlamethrowerAction) yield return x;
@@ -54,6 +62,8 @@ namespace Orbwalker
         internal static bool CanUsePlugin()
         {
             if (!Player.Available) return false;
+            if (Svc.ClientState.IsPvP && !C.PVP) return false;
+            if (C.BlockMount || C.BlockReturn || C.BlockTP) return true;
 
             Job currentJob = (Job)Player.Object.ClassJob.Id;
             if (currentJob == Job.PLD && C.PreventPassage) return true;

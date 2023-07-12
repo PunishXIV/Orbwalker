@@ -26,24 +26,24 @@ namespace Orbwalker
         {
 
             {
-                if (ThreadLoadImageHandler.TryGetTextureWrap(GetImagePath("slidecast_" + (!P.ShouldUnlock && !P.Config.ForceStopMoveCombat ? "g" : "w")), out var texture))
+                if (ThreadLoadImageHandler.TryGetTextureWrap(GetImagePath("slidecast_" + (!P.ShouldUnlock && !C.ForceStopMoveCombat ? "g" : "w")), out var texture))
                 {
-                    if (ImGui.ImageButton(texture.ImGuiHandle, texture.GetSize(40 * P.Config.SizeMod), Vector2.Zero, Vector2.One, (int)(10f * P.Config.SizeMod)))
+                    if (ImGui.ImageButton(texture.ImGuiHandle, texture.GetSize(40 * C.SizeMod), Vector2.Zero, Vector2.One, (int)(10f * C.SizeMod)))
                     {
-                        P.Config.UnlockPermanently = false;
-                        P.Config.ForceStopMoveCombat = false;
+                        C.UnlockPermanently = false;
+                        C.ForceStopMoveCombat = false;
                     }
                     ImGui.SameLine();
                 }
             }
 
             {
-                if (ThreadLoadImageHandler.TryGetTextureWrap(GetImagePath("lockslide_" + (!P.ShouldUnlock && P.Config.ForceStopMoveCombat ? "g" : "w")), out var texture))
+                if (ThreadLoadImageHandler.TryGetTextureWrap(GetImagePath("lockslide_" + (!P.ShouldUnlock && C.ForceStopMoveCombat ? "g" : "w")), out var texture))
                 {
-                    if (ImGui.ImageButton(texture.ImGuiHandle, texture.GetSize(40 * P.Config.SizeMod), Vector2.Zero, Vector2.One, (int)(10f * P.Config.SizeMod)))
+                    if (ImGui.ImageButton(texture.ImGuiHandle, texture.GetSize(40 * C.SizeMod), Vector2.Zero, Vector2.One, (int)(10f * C.SizeMod)))
                     {
-                        P.Config.UnlockPermanently = false;
-                        P.Config.ForceStopMoveCombat = true;
+                        C.UnlockPermanently = false;
+                        C.ForceStopMoveCombat = true;
                     }
                     ImGui.SameLine();
                 }
@@ -55,9 +55,9 @@ namespace Orbwalker
             {
                 if (ThreadLoadImageHandler.TryGetTextureWrap(GetImagePath("disabled_" + (P.ShouldUnlock ? "g" : "w")), out var texture))
                 {
-                    if(ImGui.ImageButton(texture.ImGuiHandle, texture.GetSize(40 * P.Config.SizeMod), Vector2.Zero, Vector2.One, (int)(10f * P.Config.SizeMod)))
+                    if(ImGui.ImageButton(texture.ImGuiHandle, texture.GetSize(40 * C.SizeMod), Vector2.Zero, Vector2.One, (int)(10f * C.SizeMod)))
                     {
-                        P.Config.UnlockPermanently = !P.Config.UnlockPermanently;
+                        C.UnlockPermanently = !C.UnlockPermanently;
                     }
                 }
             }
@@ -70,7 +70,7 @@ namespace Orbwalker
 
         public override bool DrawConditions()
         {
-            return P.Config.Enabled && Util.CanUsePlugin() && (P.Config.DisplayAlways || (Svc.Condition[ConditionFlag.BoundByDuty56] && P.Config.DisplayDuty) || (Svc.Condition[ConditionFlag.InCombat] && P.Config.DisplayBattle));
+            return C.Enabled && Util.CanUsePlugin() && (C.DisplayAlways || (Svc.Condition[ConditionFlag.BoundByDuty56] && C.DisplayDuty) || (Svc.Condition[ConditionFlag.InCombat] && C.DisplayBattle));
         }
     }
 }
