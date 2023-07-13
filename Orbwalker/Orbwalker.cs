@@ -46,8 +46,7 @@ namespace Orbwalker
         {
             if (Player.Object.IsCasting)
             {
-                if(Util.CheckTpRetMnt(Player.Object.CastActionId)) return false;
-                if (Player.Object.CastActionType == (byte)ActionType.Mount) return true;
+                if(Util.CheckTpRetMnt(Player.Object.CastActionId, (ActionType)Player.Object.CastActionType)) return false;
             }
             
             return C.IsSlideAuto

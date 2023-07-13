@@ -1,6 +1,7 @@
 ﻿using Dalamud.Game.ClientState.GamePad;
 using Dalamud.Game.ClientState.Keys;
 using ECommons.Configuration;
+using ECommons.ExcelServices;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -47,5 +48,7 @@ namespace Orbwalker
         public bool BlockTP = false;
         public bool BlockReturn = false;
         public bool BlockMount = false;
+
+        public Dictionary<Job, bool> EnabledJobs = new();
     }
 }

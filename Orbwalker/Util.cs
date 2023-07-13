@@ -17,11 +17,11 @@ namespace Orbwalker
 {
     internal unsafe static class Util
     {
-        internal static bool CheckTpRetMnt(uint acId)
+        internal static bool CheckTpRetMnt(uint acId, ActionType acType)
         {
             if (acId == Data.Teleport && !C.BlockTP) return true;
             if (acId == Data.Return && !C.BlockReturn) return true;
-            if (acId == Data.Mount && !C.BlockMount) return true;
+            if (acType == ActionType.Mount && !C.BlockMount) return true;
             return false;
         }
 
@@ -66,11 +66,15 @@ namespace Orbwalker
             if (C.BlockMount || C.BlockReturn || C.BlockTP) return true;
 
             Job currentJob = (Job)Player.Object.ClassJob.Id;
-            if (currentJob == Job.PLD && C.PreventPassage) return true;
-            if (currentJob == Job.DNC && C.PreventImprov) return true;
-            if (currentJob == Job.MCH && C.PreventFlame) return true;
-            if (currentJob == Job.NIN && C.PreventTCJ) return true;
-            return currentJob.EqualsAny(Job.SMN, Job.ACN, Job.RDM, Job.BLM, Job.THM, Job.WHM, Job.CNJ, Job.SCH, Job.AST, Job.SGE, Job.RPR, Job.SAM, Job.BLU);
+
+            if (!P.Config.EnabledJobs.ContainsKey(currentJob)) return false;
+            return P.Config.EnabledJobs[currentJob];
+
+            //if (currentJob == Job.PLD && C.PreventPassage) return true;
+            //if (currentJob == Job.DNC && C.PreventImprov) return true;
+            //if (currentJob == Job.MCH && C.PreventFlame) return true;
+            //if (currentJob == Job.NIN && C.PreventTCJ) return true;
+            //return currentJob.EqualsAny(Job.SMN, Job.ACN, Job.RDM, Job.BLM, Job.THM, Job.WHM, Job.CNJ, Job.SCH, Job.AST, Job.SGE, Job.RPR, Job.SAM, Job.BLU);
         }
 
         internal static Vector2 GetSize(this TextureWrap t, float height)
