@@ -46,6 +46,12 @@ namespace Orbwalker
             ImGuiEx.Spacing(); ImGui.Checkbox("Return", ref C.BlockReturn);
             ImGuiEx.Spacing(); ImGui.Checkbox("Mount", ref C.BlockMount);
             ImGuiGroup.EndGroupBox();
+
+            ImGuiEx.Text($"PvP Settings");
+            ImGuiGroup.BeginGroupBox();
+            ImGui.Checkbox($"Enable PvP Orbwalking", ref C.PVP);
+            ImGuiComponents.HelpMarker("Allows use of Orbwalker when in PvP game modes such as Frontlines and Crystaline Conflict. This is considered an unfair advantage over other players so use at your own risk (and conscious).");
+            ImGuiGroup.EndGroupBox();
         }
 
         static void Spacing(bool cont = false)
@@ -81,7 +87,6 @@ namespace Orbwalker
             {
                 P.Memory.EnableDisableBuffer();
             }
-            ImGui.Checkbox($"Enable PvP Orbwalking", ref C.PVP);
             ImGuiEx.Text($"Movement");
             ImGuiGroup.BeginGroupBox();
             ImGuiEx.Text($"Slidecast Window Calibration:");
