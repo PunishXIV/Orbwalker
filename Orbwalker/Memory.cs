@@ -67,7 +67,7 @@ namespace Orbwalker
                 try
                 {
                     InternalLog.Verbose($"{type}, {acId}, {target}");
-                    if (P.DelayedAction == null && type == ActionType.Spell && Util.IsActionCastable(acId) && Util.GCD == 0 && AgentMap.Instance()->IsPlayerMoving != 0 && !am->ActionQueued && !Util.CheckTpRetMnt(acId))
+                    if (P.DelayedAction == null && type == ActionType.Spell && Util.IsActionCastable(acId) && Util.GCD == 0 && AgentMap.Instance()->IsPlayerMoving != 0 && !am->ActionQueued && !Util.CheckTpRetMnt(acId, type))
                     {
                         P.DelayedAction = new(acId, 0, target, a5, a6, a7, a8);
                         return false;

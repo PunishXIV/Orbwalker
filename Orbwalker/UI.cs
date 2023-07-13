@@ -1,5 +1,6 @@
 ﻿using Dalamud.Game.ClientState.GamePad;
 using Dalamud.Interface.Components;
+using ECommons.ExcelServices;
 using ECommons.GameFunctions;
 using ECommons.Gamepad;
 using FFXIVClientStructs.FFXIV.Client.Game;
@@ -145,6 +146,105 @@ namespace Orbwalker
                 }
             }
             ImGuiGroup.EndGroupBox();
+
+            ImGuiEx.Text($"Jobs");
+            ImGuiComponents.HelpMarker("Select the jobs you wish to use Orbwalker's movement locking features on. Not all jobs have cast times, but if you have the extra features enabled for the general actions it will apply to those jobs.");
+            ImGuiGroup.BeginGroupBox();
+            ImGui.Columns(8, "###JobGrid", false);
+            foreach (var job in Enum.GetValues<Job>())
+            {
+                if (job == Job.ADV) continue;
+                if (!P.Config.EnabledJobs.ContainsKey(job))
+                    P.Config.EnabledJobs[job] = false;
+
+                bool val = P.Config.EnabledJobs[job];
+                if (ImGui.Checkbox($"{job}", ref val))
+                {
+                    if (val)
+                    {
+                        switch (job)
+                        {
+                            case Job.WHM:
+                            case Job.CNJ:
+                                P.Config.EnabledJobs[Job.WHM] = val;
+                                P.Config.EnabledJobs[Job.CNJ] = val;
+                                break;
+                            case Job.BLM:
+                            case Job.THM:
+                                P.Config.EnabledJobs[Job.BLM] = val;
+                                P.Config.EnabledJobs[Job.THM] = val;
+                                break;
+                            case Job.MNK:
+                            case Job.PGL:
+                                P.Config.EnabledJobs[Job.MNK] = val;
+                                P.Config.EnabledJobs[Job.PGL] = val;
+                                break;
+                            case Job.ACN:
+                            case Job.SMN:
+                            case Job.SCH:
+                                P.Config.EnabledJobs[Job.ACN] = val;
+                                P.Config.EnabledJobs[Job.SMN] = val;
+                                P.Config.EnabledJobs[Job.SCH] = val;
+                                break;
+                            case Job.MRD:
+                            case Job.WAR:
+                                P.Config.EnabledJobs[Job.MRD] = val;
+                                P.Config.EnabledJobs[Job.WAR] = val;
+                                break;
+                            case Job.PLD:
+                            case Job.GLA:
+                                P.Config.EnabledJobs[Job.PLD] = val;
+                                P.Config.EnabledJobs[Job.GLA] = val;
+                                break;
+                            case Job.ROG:
+                            case Job.NIN:
+                                P.Config.EnabledJobs[Job.ROG] = val;
+                                P.Config.EnabledJobs[Job.NIN] = val;
+                                break;
+                            case Job.BRD:
+                            case Job.ARC:
+                                P.Config.EnabledJobs[Job.BRD] = val;
+                                P.Config.EnabledJobs[Job.ARC] = val;
+                                break;
+                            case Job.LNC:
+                            case Job.DRG:
+                                P.Config.EnabledJobs[Job.LNC] = val;
+                                P.Config.EnabledJobs[Job.DRG] = val;
+                                break;
+                            case Job.CUL:
+                            case Job.ALC:
+                            case Job.BSM:
+                            case Job.GSM:
+                            case Job.ARM:
+                            case Job.LTW:
+                            case Job.CRP:
+                            case Job.WVR:
+                                P.Config.EnabledJobs[Job.CUL] = val;
+                                P.Config.EnabledJobs[Job.ALC] = val;
+                                P.Config.EnabledJobs[Job.BSM] = val;
+                                P.Config.EnabledJobs[Job.GSM] = val;
+                                P.Config.EnabledJobs[Job.ARM] = val;
+                                P.Config.EnabledJobs[Job.LTW] = val;
+                                P.Config.EnabledJobs[Job.CRP] = val;
+                                P.Config.EnabledJobs[Job.WVR] = val;
+                                break;
+                            case Job.BTN:
+                            case Job.MIN:
+                            case Job.FSH:
+                                P.Config.EnabledJobs[Job.BTN] = val;
+                                P.Config.EnabledJobs[Job.MIN] = val;
+                                P.Config.EnabledJobs[Job.FSH] = val;
+                                break;
+                        }
+                    }
+
+                    P.Config.EnabledJobs[job] = val;
+                }
+                ImGui.NextColumn();
+            }
+            ImGui.Columns(1);
+            ImGuiGroup.EndGroupBox();
+
 
             ImGuiEx.Text($"Overlay");
             ImGuiGroup.BeginGroupBox();
