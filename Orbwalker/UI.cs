@@ -4,6 +4,7 @@ using ECommons.ExcelServices;
 using ECommons.GameFunctions;
 using ECommons.Gamepad;
 using FFXIVClientStructs.FFXIV.Client.Game;
+using Lumina.Excel.GeneratedSheets;
 using Orbwalker;
 using PunishLib;
 using PunishLib.ImGuiMethods;
@@ -155,6 +156,36 @@ namespace Orbwalker
             ImGuiEx.Text($"Jobs");
             ImGuiComponents.HelpMarker("Select the jobs you wish to use Orbwalker's movement locking features on. Not all jobs have cast times, but if you have the extra features enabled for the general actions it will apply to those jobs.");
             ImGuiGroup.BeginGroupBox();
+            ImGuiEx.TextV("Toggle:");
+            if (ImGui.Button("All"))
+            {
+                var jobs = Enum.GetValues<Job>().Where(x => x != Job.ADV);
+                var b = jobs.All(x => C.EnabledJobs.TryGetValue(x, out var v) && v);
+                foreach (var x in jobs)
+                {
+                    C.EnabledJobs[x] = !b;
+                }
+            }
+            ImGui.SameLine();
+            if (ImGui.Button($"Casters"))
+            {
+                var b = Data.CastingJobs.All(x => C.EnabledJobs.TryGetValue(x, out var v) && v);
+                foreach(var x in Data.CastingJobs) 
+                {
+                    C.EnabledJobs[x] = !b;
+                }
+            }
+            ImGui.SameLine();
+            if (ImGui.Button("DoL/DoH"))
+            {
+                var jobs = Svc.Data.GetExcelSheet<ClassJob>().Where(x => x.ClassJobCategory.Value.RowId.EqualsAny<uint>(33, 32)).Select(x => x.RowId).Cast<Job>();
+                var b = jobs.All(x => C.EnabledJobs.TryGetValue(x, out var v) && v);
+                foreach (var x in jobs)
+                {
+                    C.EnabledJobs[x] = !b;
+                }
+            }
+            ImGui.Separator();
             ImGui.Columns(8, "###JobGrid", false);
             foreach (var job in Enum.GetValues<Job>())
             {
