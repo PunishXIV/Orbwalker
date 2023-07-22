@@ -63,8 +63,7 @@ namespace Orbwalker
         {
             if (!Player.Available) return false;
             if (Svc.ClientState.IsPvP && !C.PVP) return false;
-            if (C.BlockMount || C.BlockReturn || C.BlockTP) return true;
-
+            
             Job currentJob = (Job)Player.Object.ClassJob.Id;
 
             if (!P.Config.EnabledJobs.ContainsKey(currentJob)) return false;

@@ -62,11 +62,14 @@ namespace Orbwalker
 
         private bool UseActionDetour(ActionManager* am, ActionType type, uint acId, long target, uint a5, uint a6, uint a7, void* a8)
         {
-            if (C.Enabled && C.Buffer && !P.ShouldUnlock)
+            if (C.Enabled && C.Buffer && !P.ShouldUnlock && Util.CanUsePlugin())
             {
                 try
                 {
                     InternalLog.Verbose($"{type}, {acId}, {target}");
+                    if (Svc.Data.GetExcelSheet<Lumina.Excel.GeneratedSheets.Action>().TryGetFirst(x => x.RowId == acId, out var sheetAct) && sheetAct.TargetArea && sheetAct.Cast100ms > 0)
+                        P.BlockMovementUntil = Environment.TickCount64 + (long)(P.Config.GroundedHold * 1000);
+
                     if (P.DelayedAction == null && ((type == ActionType.Spell && Util.IsActionCastable(acId)) || type == ActionType.Mount) && Util.GCD == 0 && AgentMap.Instance()->IsPlayerMoving != 0 && !am->ActionQueued && !Util.CheckTpRetMnt(acId, type))
                     {
                         P.DelayedAction = new(acId, type, 0, target, a5, a6, a7, a8);
