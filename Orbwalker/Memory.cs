@@ -1,6 +1,7 @@
 ﻿using Dalamud.Game.ClientState.GamePad;
 using Dalamud.Hooking;
 using Dalamud.Utility.Signatures;
+using ECommons.Hooks;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using Lumina.Excel.GeneratedSheets;
@@ -15,26 +16,6 @@ namespace Orbwalker
 {
     internal unsafe class Memory : IDisposable
     {
-        private delegate void SendActionDelegate(long targetObjectId, byte actionType, uint actionId, ushort sequence, long a5, long a6, long a7, long a8, long a9);
-        [Signature("E8 ?? ?? ?? ?? E9 ?? ?? ?? ?? F3 0F 10 3D ?? ?? ?? ?? 48 8D 4D BF", DetourName = nameof(SendActionDetour))]
-        private static Hook<SendActionDelegate> SendActionHook;
-        private unsafe static void SendActionDetour(long targetObjectId, byte actionType, uint actionId, ushort sequence, long a5, long a6, long a7, long a8, long a9)
-        {
-            try
-            {
-                if (Util.GetMovePreventionActions().Contains(actionId))
-                {
-                    P.BlockMovementUntil = Environment.TickCount64 + 1000;
-                    PluginLog.Debug($"Blocking movement until {P.BlockMovementUntil} because of action {actionId}");
-                }
-            }
-            catch (Exception ex)
-            {
-                ex.Log();
-            }
-            SendActionHook.Original(targetObjectId, actionType, actionId, sequence, a5, a6, a7, a8, a9);
-        }
-
         internal delegate bool UseActionDelegate(ActionManager* am, ActionType type, uint acId, long target, uint a5, uint a6, uint a7, void* a8);
         internal Hook<UseActionDelegate> UseActionHook;
         internal Memory()
@@ -42,7 +23,14 @@ namespace Orbwalker
             UseActionHook = Hook<UseActionDelegate>.FromAddress((nint)ActionManager.Addresses.UseAction.Value, UseActionDetour);
             SignatureHelper.Initialise(this);
             PluginLog.Debug($"forceDisableMovementPtr = {forceDisableMovementPtr:X16}");
-            SendActionHook.Enable();
+            SendAction.Init((long targetObjectId, byte actionType, uint actionId, ushort sequence, long a5, long a6, long a7, long a8, long a9) =>
+            {
+                if (Util.GetMovePreventionActions().Contains(actionId))
+                {
+                    P.BlockMovementUntil = Environment.TickCount64 + 1000;
+                    PluginLog.Debug($"Blocking movement until {P.BlockMovementUntil} because of action {actionId}");
+                }
+            });
         }
 
         internal void EnableDisableBuffer()
@@ -148,8 +136,6 @@ namespace Orbwalker
 
         public void Dispose()
         {
-            SendActionHook?.Disable();
-            SendActionHook?.Dispose();
             DisableHooks();
             InputData_IsInputIDKeyPressedHook.Dispose();
             InputData_IsInputIDKeyClickedHook.Dispose();

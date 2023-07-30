@@ -20,6 +20,7 @@ namespace Orbwalker
         {
             ImGuiEx.EzTabBar("Default",
                 ("Settings", Settings, null, true),
+                ("Classes/Jobs", Jobs, null, true),
                 ("Extras", Extras, null, true),
                 ("About", () => AboutTab.Draw(P), null, true),
                 ("Debug".NullWhenFalse(C.Debug), Debug, ImGuiColors.DalamudGrey3, true),
@@ -153,10 +154,28 @@ namespace Orbwalker
             }
             ImGuiGroup.EndGroupBox();
 
+            ImGuiEx.Text($"Overlay");
+            ImGuiGroup.BeginGroupBox();
+
+            ImGuiEx.Text($"Display Overlay");
+            ImGuiComponents.HelpMarker("Choose when to display the Orbwalker overlay when enabled.");
+            Spacing(true); ImGui.Checkbox($"In Combat", ref C.DisplayBattle);
+            Spacing(true); ImGui.Checkbox($"In Duty", ref C.DisplayDuty);
+            Spacing(true); ImGui.Checkbox($"Always", ref C.DisplayAlways);
+            Spacing();
+            ImGui.SetNextItemWidth(100f);
+            ImGui.SliderFloat($"Overlay scale", ref C.SizeMod.ValidateRange(0.5f, 2f), 0.8f, 1.2f);
+
+            ImGuiGroup.EndGroupBox();
+        }
+
+        static void Jobs()
+        {
             ImGuiEx.Text($"Jobs");
             ImGuiComponents.HelpMarker("Select the jobs you wish to use Orbwalker's movement locking features on. Not all jobs have cast times, but if you have the extra features enabled for the general actions it will apply to those jobs.");
             ImGuiGroup.BeginGroupBox();
             ImGuiEx.TextV("Toggle:");
+            ImGui.SameLine();
             if (ImGui.Button("All"))
             {
                 var jobs = Enum.GetValues<Job>().Where(x => x != Job.ADV);
@@ -170,7 +189,7 @@ namespace Orbwalker
             if (ImGui.Button($"Casters"))
             {
                 var b = Data.CastingJobs.All(x => C.EnabledJobs.TryGetValue(x, out var v) && v);
-                foreach(var x in Data.CastingJobs) 
+                foreach (var x in Data.CastingJobs)
                 {
                     C.EnabledJobs[x] = !b;
                 }
@@ -279,21 +298,6 @@ namespace Orbwalker
                 ImGui.NextColumn();
             }
             ImGui.Columns(1);
-            ImGuiGroup.EndGroupBox();
-
-
-            ImGuiEx.Text($"Overlay");
-            ImGuiGroup.BeginGroupBox();
-
-            ImGuiEx.Text($"Display Overlay");
-            ImGuiComponents.HelpMarker("Choose when to display the Orbwalker overlay when enabled.");
-            Spacing(true); ImGui.Checkbox($"In Combat", ref C.DisplayBattle);
-            Spacing(true); ImGui.Checkbox($"In Duty", ref C.DisplayDuty);
-            Spacing(true); ImGui.Checkbox($"Always", ref C.DisplayAlways);
-            Spacing();
-            ImGui.SetNextItemWidth(100f);
-            ImGui.SliderFloat($"Overlay scale", ref C.SizeMod.ValidateRange(0.5f, 2f), 0.8f, 1.2f);
-
             ImGuiGroup.EndGroupBox();
         }
 
