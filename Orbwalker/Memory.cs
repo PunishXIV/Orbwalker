@@ -20,7 +20,7 @@ namespace Orbwalker
         internal Hook<UseActionDelegate> UseActionHook;
         internal Memory()
         {
-            UseActionHook = Hook<UseActionDelegate>.FromAddress((nint)ActionManager.Addresses.UseAction.Value, UseActionDetour);
+            UseActionHook = Svc.Hook.HookFromAddress<UseActionDelegate>((nint)ActionManager.Addresses.UseAction.Value, UseActionDetour);
             SignatureHelper.Initialise(this);
             PluginLog.Debug($"forceDisableMovementPtr = {forceDisableMovementPtr:X16}");
             SendAction.Init((long targetObjectId, byte actionType, uint actionId, ushort sequence, long a5, long a6, long a7, long a8, long a9) =>

@@ -67,7 +67,7 @@ namespace Orbwalker
                 : C.ReleaseKey != Keys.None && IsKeyPressed(C.ReleaseKey);
         }
 
-        private void Framework_Update(Dalamud.Game.Framework framework)
+        private void Framework_Update(object framework)
         {
             PerformDelayedAction();
 
