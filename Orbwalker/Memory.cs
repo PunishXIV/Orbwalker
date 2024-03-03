@@ -85,7 +85,7 @@ namespace Orbwalker
             if (*hold == (MButtonHoldState.Left | MButtonHoldState.Right)) {
                 *hold = 0;
             }
-            // GagSpeak.Log.Debug($"{((IntPtr)hold).ToString("X")}");
+            //PluginLog.Debug($"{((IntPtr)hold).ToString("X")}");
             // update the original
             byte ret = MouseMovePreventerHook.Original(thisx);
             // restore the original
