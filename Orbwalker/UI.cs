@@ -152,6 +152,24 @@ namespace Orbwalker
                     ImGui.EndCombo();
                 }
             }
+
+            ImGui.PushItemWidth(300);
+            ImGuiEx.TextV($"Ground Targeting Hold (seconds):");
+            ImGui.SameLine();
+            ImGui.SetNextItemWidth(100f);
+
+            if (ImGui.InputFloat("###GroundedHoldConfig", ref P.Config.GroundedHold,0,0,"%.2g"))
+            {
+                if (P.Config.GroundedHold <= 0)
+                    P.Config.GroundedHold = 0;
+
+                if (P.Config.GroundedHold % 0.01f != 0)
+                    P.Config.GroundedHold = (float)Math.Round(P.Config.GroundedHold, 2, MidpointRounding.ToNegativeInfinity);
+            }
+
+            ImGuiComponents.HelpMarker($"Spells which have cast times that are also targeted on the ground (mainly found in BLU) register casting as the target appears, and will cancel cast times if moving as it's confirmed. " +
+                $"This option forces your character to stop as the target appears for however long as to not cancel the cast pre-emptively.");
+
             ImGuiGroup.EndGroupBox();
 
             ImGuiEx.Text($"Overlay");
@@ -205,7 +223,7 @@ namespace Orbwalker
                 }
             }
             ImGui.Separator();
-            ImGui.Columns(8, "###JobGrid", false);
+            ImGui.Columns(5, "###JobGrid", false);
             foreach (var job in Enum.GetValues<Job>())
             {
                 if (job == Job.ADV) continue;
