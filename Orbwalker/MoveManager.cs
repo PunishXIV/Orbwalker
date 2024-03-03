@@ -15,12 +15,12 @@ namespace Orbwalker
         {
             if (MovingDisabled)
             {
-                PluginLog.Debug($"Enabling moving, cnt {P.Memory.ForceDisableMovement}");
+                PluginLog.Debug($"Enabling moving"); // , cnt {P.Memory.ForceDisableMovement}");
                 P.Memory.DisableHooks();
-                if (P.Memory.ForceDisableMovement > 0)
-                {
-                    P.Memory.ForceDisableMovement--;
-                }
+                // if (P.Memory.ForceDisableMovement > 0)
+                // {
+                //     P.Memory.ForceDisableMovement--;
+                // }
                 MovingDisabled = false;
             }
         }
@@ -29,9 +29,9 @@ namespace Orbwalker
         {
             if (!MovingDisabled)
             {
-                PluginLog.Debug($"Disabling moving, cnt {P.Memory.ForceDisableMovement}");
+                PluginLog.Debug($"Disabling moving"); // , cnt {P.Memory.ForceDisableMovement}");
                 P.Memory.EnableHooks();
-                P.Memory.ForceDisableMovement++;
+                // P.Memory.ForceDisableMovement++;
                 MovingDisabled = true;
             }
         }

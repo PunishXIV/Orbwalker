@@ -96,7 +96,7 @@ namespace Orbwalker
             }
 
             var actionManager = ActionManager.Instance();
-            var adjustedCastTime = ActionManager.GetAdjustedCastTime(ActionType.Spell, id);
+            var adjustedCastTime = ActionManager.GetAdjustedCastTime(ActionType.Action, id);
 
             return adjustedCastTime > 0;
         }
