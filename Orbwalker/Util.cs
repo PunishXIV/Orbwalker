@@ -1,3 +1,4 @@
+using Dalamud.Interface.Internal;
 using ECommons;
 using ECommons.ExcelServices;
 using ECommons.GameHelpers;
@@ -76,7 +77,7 @@ namespace Orbwalker
             //return currentJob.EqualsAny(Job.SMN, Job.ACN, Job.RDM, Job.BLM, Job.THM, Job.WHM, Job.CNJ, Job.SCH, Job.AST, Job.SGE, Job.RPR, Job.SAM, Job.BLU);
         }
 
-        internal static Vector2 GetSize(this TextureWrap t, float height)
+        internal static Vector2 GetSize(this IDalamudTextureWrap t, float height)
         {
             return new Vector2(t.Width * (height / t.Height), height);
         }
@@ -94,7 +95,7 @@ namespace Orbwalker
             }
 
             var actionManager = ActionManager.Instance();
-            var adjustedCastTime = ActionManager.GetAdjustedCastTime(ActionType.Spell, id);
+            var adjustedCastTime = ActionManager.GetAdjustedCastTime(ActionType.Action, id);
 
             return adjustedCastTime > 0;
         }
