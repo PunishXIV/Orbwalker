@@ -22,7 +22,7 @@ namespace Orbwalker
                 ("Settings", Settings, null, true),
                 ("Classes/Jobs", Jobs, null, true),
                 ("Extras", Extras, null, true),
-                ("About", () => AboutTab.Draw(P), null, true),
+                ("About", () => AboutTab.Draw(P.Name), null, true),
                 ("Debug".NullWhenFalse(C.Debug), Debug, ImGuiColors.DalamudGrey3, true),
                 InternalLog.ImGuiTab(C.Debug)
 

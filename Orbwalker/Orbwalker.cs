@@ -29,7 +29,7 @@ namespace Orbwalker
         {
             P = this;
             ECommonsMain.Init(pluginInterface, this, Module.DalamudReflector);
-            PunishLibMain.Init(pluginInterface, this, null, PunishOption.DefaultKoFi);
+            PunishLibMain.Init(pluginInterface, this.Name, null, PunishOption.DefaultKoFi);
             new TickScheduler(delegate
             {
                 Memory = new();

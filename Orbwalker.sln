@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ECommons", "ECommons\ECommo
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PunishLib", "PunishLib", "{006C1DC1-CE62-45A4-B71B-DA22C394E95B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PunishLib", "PunishLib\PunishLib\PunishLib.csproj", "{5D8FA110-BBB5-4F4E-BA05-27F53D859A12}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PunishLib", "PunishLib\PunishLib\PunishLib.csproj", "{5D8FA110-BBB5-4F4E-BA05-27F53D859A12}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,8 +31,8 @@ Global
 		{E9FD3517-CC90-4EAA-B325-609B0B41D560}.Debug|Any CPU.Build.0 = Release|x64
 		{E9FD3517-CC90-4EAA-B325-609B0B41D560}.Debug|x64.ActiveCfg = Debug|x64
 		{E9FD3517-CC90-4EAA-B325-609B0B41D560}.Debug|x64.Build.0 = Debug|x64
-		{E9FD3517-CC90-4EAA-B325-609B0B41D560}.Release|Any CPU.ActiveCfg = Release|x64
-		{E9FD3517-CC90-4EAA-B325-609B0B41D560}.Release|Any CPU.Build.0 = Release|x64
+		{E9FD3517-CC90-4EAA-B325-609B0B41D560}.Release|Any CPU.ActiveCfg = ReleaseForms|x64
+		{E9FD3517-CC90-4EAA-B325-609B0B41D560}.Release|Any CPU.Build.0 = ReleaseForms|x64
 		{E9FD3517-CC90-4EAA-B325-609B0B41D560}.Release|x64.ActiveCfg = Release|x64
 		{E9FD3517-CC90-4EAA-B325-609B0B41D560}.Release|x64.Build.0 = Release|x64
 		{5D8FA110-BBB5-4F4E-BA05-27F53D859A12}.Debug|Any CPU.ActiveCfg = Debug|x64
@@ -47,10 +47,10 @@ Global
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
-	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {6EC3AC97-DC17-436E-A2E1-498C60511997}
-	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{5D8FA110-BBB5-4F4E-BA05-27F53D859A12} = {006C1DC1-CE62-45A4-B71B-DA22C394E95B}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6EC3AC97-DC17-436E-A2E1-498C60511997}
 	EndGlobalSection
 EndGlobal
