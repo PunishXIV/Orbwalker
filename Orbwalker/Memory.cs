@@ -113,7 +113,7 @@ namespace Orbwalker
 
 
         delegate byte InputData_IsInputIDKeyClickedDelegate(nint a1, int key);
-        [Signature("E9 ?? ?? ?? ?? 83 7F ?? ?? 0F 8F ?? ?? ?? ?? BA ?? ?? ?? ?? 48 8B CB", DetourName = nameof(InputData_IsInputIDKeyClickedDetour), Fallibility = Fallibility.Infallible)]
+        [Signature("48 89 5C 24 ?? 56 41 56 41 57 48 83 EC 20 48 63 C2", DetourName = nameof(InputData_IsInputIDKeyClickedDetour), Fallibility = Fallibility.Infallible)]
         Hook<InputData_IsInputIDKeyClickedDelegate> InputData_IsInputIDKeyClickedHook;
         byte InputData_IsInputIDKeyClickedDetour(nint a1, int key)
         {
@@ -124,7 +124,7 @@ namespace Orbwalker
 
 
         delegate byte InputData_IsInputIDKeyHeldDelegate(nint a1, int key);
-        [Signature("E8 ?? ?? ?? ?? 84 C0 74 08 85 DB", DetourName = nameof(InputData_IsInputIDKeyHeldDetour), Fallibility = Fallibility.Infallible)]
+        [Signature("E8 ?? ?? ?? ?? 84 DB 0F B6 D0", DetourName = nameof(InputData_IsInputIDKeyHeldDetour), Fallibility = Fallibility.Infallible)]
         Hook<InputData_IsInputIDKeyHeldDelegate> InputData_IsInputIDKeyHeldHook;
         byte InputData_IsInputIDKeyHeldDetour(nint a1, int key)
         {
