@@ -13,6 +13,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Dalamud.Interface.Textures.TextureWraps;
 
 namespace Orbwalker
 {
@@ -102,7 +103,7 @@ namespace Orbwalker
 
         internal static bool IsMouseMoveOrdered()
         {
-            return IsKeyPressed(Keys.LButton) && IsKeyPressed(Keys.RButton);
+            return IsKeyPressed((int)Keys.LButton) && IsKeyPressed((int)Keys.RButton);
         }
     }
 }

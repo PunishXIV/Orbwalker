@@ -16,7 +16,7 @@ namespace Orbwalker
         internal Hook<UseActionDelegate> UseActionHook;
         internal Memory()
         {
-            UseActionHook = Svc.Hook.HookFromAddress<UseActionDelegate>((nint)ActionManager.Addresses.UseAction.Value, UseActionDetour);
+            UseActionHook = Svc.Hook.HookFromAddress<UseActionDelegate>((nint)ActionManager.MemberFunctionPointers.UseAction, UseActionDetour);
             SignatureHelper.Initialise(this);
             //PluginLog.Debug($"forceDisableMovementPtr = {forceDisableMovementPtr:X16}");
             SendAction.Init((long targetObjectId, byte actionType, uint actionId, ushort sequence, long a5, long a6, long a7, long a8, long a9) =>
@@ -77,7 +77,7 @@ namespace Orbwalker
 
         // better for preventing mouse movements in both camera modes
         public unsafe delegate byte MoveOnMousePreventorDelegate(MoveControllerSubMemberForMine* thisx);
-        [Signature("40 55 53 48 8d 6c 24 c8 48 81 ec 38 01 00 00", DetourName = nameof(MovementUpdate), Fallibility = Fallibility.Auto)]
+        [Signature("40 55 53 48 8D 6C 24 ?? 48 81 EC ?? ?? ?? ?? 48 83 79", DetourName = nameof(MovementUpdate), Fallibility = Fallibility.Auto)]
         private static Hook<MoveOnMousePreventorDelegate>? MouseMovePreventerHook { get; set; } = null!;
         [return: MarshalAs(UnmanagedType.U1)]
         public unsafe byte MovementUpdate(MoveControllerSubMemberForMine* thisx) { // was static before.
@@ -102,7 +102,7 @@ namespace Orbwalker
 
 
         delegate byte InputData_IsInputIDKeyPressedDelegate(nint a1, int key);
-        [Signature("E8 ?? ?? ?? ?? 84 C0 48 63 03", DetourName =nameof(InputData_IsInputIDKeyPressedDetour), Fallibility = Fallibility.Infallible)]
+        [Signature("E8 ?? ?? ?? ?? 33 DB 41 8B D5", DetourName =nameof(InputData_IsInputIDKeyPressedDetour), Fallibility = Fallibility.Infallible)]
         Hook<InputData_IsInputIDKeyPressedDelegate> InputData_IsInputIDKeyPressedHook;
         byte InputData_IsInputIDKeyPressedDetour(nint a1, int key)
         {
@@ -113,7 +113,7 @@ namespace Orbwalker
 
 
         delegate byte InputData_IsInputIDKeyClickedDelegate(nint a1, int key);
-        [Signature("E9 ?? ?? ?? ?? 83 7F 44 02", DetourName = nameof(InputData_IsInputIDKeyClickedDetour), Fallibility = Fallibility.Infallible)]
+        [Signature("E9 ?? ?? ?? ?? 83 7F ?? ?? 0F 8F ?? ?? ?? ?? BA ?? ?? ?? ?? 48 8B CB", DetourName = nameof(InputData_IsInputIDKeyClickedDetour), Fallibility = Fallibility.Infallible)]
         Hook<InputData_IsInputIDKeyClickedDelegate> InputData_IsInputIDKeyClickedHook;
         byte InputData_IsInputIDKeyClickedDetour(nint a1, int key)
         {

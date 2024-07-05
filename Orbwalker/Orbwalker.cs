@@ -6,7 +6,6 @@ using ECommons.SimpleGui;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
-using Lumina.Excel.GeneratedSheets;
 using PunishLib;
 using System.Windows.Forms;
 
@@ -25,7 +24,7 @@ namespace Orbwalker
         internal static Config C => P.Config;
         internal long BlockMovementUntil = 0;
 
-        public Orbwalker(DalamudPluginInterface pluginInterface)
+        public Orbwalker(IDalamudPluginInterface pluginInterface)
         {
             P = this;
             ECommonsMain.Init(pluginInterface, this, Module.DalamudReflector);
@@ -64,7 +63,7 @@ namespace Orbwalker
             if (Framework.Instance()->WindowInactive) return false;
             return C.ControllerMode 
                 ? C.ReleaseButton != Dalamud.Game.ClientState.GamePad.GamepadButtons.None && (GamePad.IsButtonPressed(C.ReleaseButton) || GamePad.IsButtonHeld(C.ReleaseButton)) 
-                : C.ReleaseKey != Keys.None && IsKeyPressed(C.ReleaseKey);
+                : C.ReleaseKey != Keys.None && IsKeyPressed((int) C.ReleaseKey);
         }
 
         private void Framework_Update(object framework)
@@ -201,7 +200,7 @@ namespace Orbwalker
                 WasCancelled = false;
                 C.MoveKeys.Each(x =>
                 {
-                    if (IsKeyPressed((Keys)x))
+                    if (IsKeyPressed((int) x))
                     {
                         DalamudReflector.SetKeyState(x, 3);
                         InternalLog.Debug($"Reenabling key {x}");
