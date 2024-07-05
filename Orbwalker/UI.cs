@@ -326,7 +326,7 @@ namespace Orbwalker
             {
                 var addInfo = stackalloc uint[1];
                 // was spell before, fixed
-                ImGuiEx.Text($"{ActionManager.Instance()->GetActionStatus(ActionType.Action, 16541, Svc.Targets.Target.Struct()->GetObjectID(), outOptExtraInfo: addInfo)} / {*addInfo}");
+                ImGuiEx.Text($"{ActionManager.Instance()->GetActionStatus(ActionType.Action, 16541, Svc.Targets.Target.Struct()->EntityId, outOptExtraInfo: addInfo)} / {*addInfo}");
             }
             ImGuiEx.Text($"GCD: {Util.GCD}\nRCorGRD:{Util.GetRCorGDC()}");
         }
@@ -347,7 +347,7 @@ namespace Orbwalker
                     ImGuiEx.Text(ImGuiColors.DalamudYellow, $"Now press new key...");
                     foreach (var x in Enum.GetValues<Keys>())
                     {
-                        if (IsKeyPressed(x))
+                        if (IsKeyPressed((int) x))
                         {
                             KeyInputActive = null;
                             key = x;
