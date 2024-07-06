@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Orbwalker
+﻿namespace Orbwalker
 {
     internal static class MoveManager
     {
@@ -17,10 +11,13 @@ namespace Orbwalker
             {
                 PluginLog.Debug($"Enabling moving"); // , cnt {P.Memory.ForceDisableMovement}");
                 P.Memory.DisableHooks();
-                // if (P.Memory.ForceDisableMovement > 0)
-                // {
-                //     P.Memory.ForceDisableMovement--;
-                // }
+                if (P.Config.ControllerMode)
+                {
+                    if (P.Memory.ForceDisableMovement > 0)
+                    {
+                        P.Memory.ForceDisableMovement--;
+                    }
+                }
                 MovingDisabled = false;
             }
         }
@@ -31,7 +28,10 @@ namespace Orbwalker
             {
                 PluginLog.Debug($"Disabling moving"); // , cnt {P.Memory.ForceDisableMovement}");
                 P.Memory.EnableHooks();
-                // P.Memory.ForceDisableMovement++;
+                if (P.Config.ControllerMode)
+                {
+                    P.Memory.ForceDisableMovement++;
+                }
                 MovingDisabled = true;
             }
         }

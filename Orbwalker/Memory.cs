@@ -18,7 +18,7 @@ namespace Orbwalker
         {
             UseActionHook = Svc.Hook.HookFromAddress<UseActionDelegate>((nint)ActionManager.MemberFunctionPointers.UseAction, UseActionDetour);
             SignatureHelper.Initialise(this);
-            //PluginLog.Debug($"forceDisableMovementPtr = {forceDisableMovementPtr:X16}");
+            PluginLog.Debug($"forceDisableMovementPtr = {forceDisableMovementPtr:X16}");
             SendAction.Init((long targetObjectId, byte actionType, uint actionId, ushort sequence, long a5, long a6, long a7, long a8, long a9) =>
             {
                 if (Util.GetMovePreventionActions().Contains(actionId))
@@ -71,9 +71,9 @@ namespace Orbwalker
             return ret;
         }
 
-        // [Signature("F3 0F 10 05 ?? ?? ?? ?? 0F 2E C6 0F 8A", ScanType = ScanType.StaticAddress, Fallibility = Fallibility.Infallible)]
-        // private nint forceDisableMovementPtr;
-        // internal ref int ForceDisableMovement => ref *(int*)(forceDisableMovementPtr + 4);
+        [Signature("F3 0F 10 05 ?? ?? ?? ?? 0F 2E C7", ScanType = ScanType.StaticAddress, Fallibility = Fallibility.Infallible)]
+        private nint forceDisableMovementPtr;
+        internal ref int ForceDisableMovement => ref *(int*)(forceDisableMovementPtr + 4);
 
         // better for preventing mouse movements in both camera modes
         public unsafe delegate byte MoveOnMousePreventorDelegate(MoveControllerSubMemberForMine* thisx);
