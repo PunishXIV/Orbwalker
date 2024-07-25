@@ -11,7 +11,7 @@
             {
                 PluginLog.Debug($"Enabling moving"); // , cnt {P.Memory.ForceDisableMovement}");
                 P.Memory.DisableHooks();
-                if (P.Config.ControllerMode)
+                if (!C.DisableMouseDisabling || C.ControllerMode)
                 {
                     if (P.Memory.ForceDisableMovement > 0)
                     {
@@ -28,7 +28,7 @@
             {
                 PluginLog.Debug($"Disabling moving"); // , cnt {P.Memory.ForceDisableMovement}");
                 P.Memory.EnableHooks();
-                if (P.Config.ControllerMode)
+                if ((!C.DisableMouseDisabling && Util.IsMouseMoveOrdered()) || C.ControllerMode)
                 {
                     P.Memory.ForceDisableMovement++;
                 }
