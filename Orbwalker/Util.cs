@@ -33,15 +33,17 @@ namespace Orbwalker
             if (C.PreventImprov) foreach (var x in Data.ImprovisationAction) yield return x;
             if (C.PreventPassage) foreach (var x in Data.PassageAction) yield return x;
             if (C.PreventTCJ) foreach (var x in Data.TCJAction) yield return x;
-        }
+			if (C.PreventPhantom) foreach (var x in Data.PhantomFlurryAction) yield return x;
+		}
 
         internal static IEnumerable<uint> GetMovePreventionStatuses()
         {
             if (C.PreventFlame) yield return Data.FlamethrowerBuff;
-            if (C.PreventImprov)  yield return Data.Improvisation;
+            if (C.PreventImprov)  yield return Data.ImprovisationBuff;
             if (C.PreventPassage)  yield return Data.PassageBuff;
             if (C.PreventTCJ)  yield return Data.TCJBuff;
-        }
+			if (C.PreventPhantom) yield return Data.PhantomFlurryBuff;
+		}
 
         internal static float GCD
         {
@@ -85,7 +87,7 @@ namespace Orbwalker
 
         internal static bool IsActionCastable(uint id)
         {
-            if (Util.GetMovePreventionActions().Contains(id)) return true;
+            if (GetMovePreventionActions().Contains(id)) return true;
             var actionSheet = Svc.Data.GetExcelSheet<Lumina.Excel.GeneratedSheets.Action>();
             id = ActionManager.Instance()->GetAdjustedActionId(id);
             var actionRow = actionSheet.GetRow(id);

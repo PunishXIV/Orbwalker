@@ -15,10 +15,12 @@ namespace Orbwalker
         internal static uint[] TCJAction = new uint[] { 7403 };
         internal const uint FlamethrowerBuff = 1205;
         internal static uint[] FlamethrowerAction = new uint[] { 7418 };
-        internal const uint Improvisation = 1827;
+        internal const uint ImprovisationBuff = 1827;
         internal static uint[] ImprovisationAction = new uint[] { 16014 };
+		internal const uint PhantomFlurryBuff = 2502;
+		internal static uint[] PhantomFlurryAction = new uint[] { 23288 };
 
-        internal const uint Teleport = 5;
+		internal const uint Teleport = 5;
         internal const uint Return = 6;
         internal const uint Mount = 4;
 
