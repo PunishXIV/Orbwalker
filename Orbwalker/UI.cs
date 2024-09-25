@@ -39,7 +39,8 @@ namespace Orbwalker
             ImGuiEx.Spacing(); ImGui.Checkbox("Ten Chi Jin (NIN)", ref C.PreventTCJ);
             ImGuiEx.Spacing(); ImGui.Checkbox("Flamethrower (MCH)", ref C.PreventFlame);
             ImGuiEx.Spacing(); ImGui.Checkbox("Improvisation (DNC)", ref C.PreventImprov);
-            ImGuiGroup.EndGroupBox();
+			ImGuiEx.Spacing(); ImGui.Checkbox("Phantom Flurry (BLU)", ref C.PreventPhantom);
+			ImGuiGroup.EndGroupBox();
 
 
             ImGuiEx.Text($"Miscellaneous Casts");
