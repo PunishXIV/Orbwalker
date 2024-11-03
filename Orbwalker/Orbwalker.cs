@@ -163,7 +163,7 @@ namespace Orbwalker
 
         private void HandleMovementPrevention()
         {
-            if ((!C.DisableMouseDisabling && Util.IsMouseMoveOrdered()) || C.ControllerMode || IsStronglyLocked)
+            if (!C.DisableMouseDisabling || C.ControllerMode || IsStronglyLocked)
             {
                 MoveManager.DisableMoving();
             }

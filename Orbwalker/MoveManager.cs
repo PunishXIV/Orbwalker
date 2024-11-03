@@ -10,8 +10,10 @@
             if (MovingDisabled)
             {
                 PluginLog.Debug($"Enabling moving"); // , cnt {P.Memory.ForceDisableMovement}");
+                // Handle WASD Movement (and LMB+RMB Movement, if enabled)
                 P.Memory.DisableHooks();
-                if (!C.DisableMouseDisabling || C.ControllerMode)
+                // Handle Controller based Movement
+                if(C.ControllerMode)
                 {
                     if (P.Memory.ForceDisableMovement > 0)
                     {
@@ -27,8 +29,17 @@
             if (!MovingDisabled)
             {
                 PluginLog.Debug($"Disabling moving"); // , cnt {P.Memory.ForceDisableMovement}");
+                // Handle WASD Movement
                 P.Memory.EnableHooks();
-                if ((!C.DisableMouseDisabling && Util.IsMouseMoveOrdered()) || C.ControllerMode)
+
+                // Handle LMB+RMB movement
+                if (!C.DisableMouseDisabling)
+                {
+                    P.Memory.EnableMouseAutoMoveHook();
+                }
+
+                // Handle Controller based Movement
+                if(C.ControllerMode)
                 {
                     P.Memory.ForceDisableMovement++;
                 }
