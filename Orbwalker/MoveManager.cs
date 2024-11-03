@@ -4,6 +4,7 @@
     {
         internal static readonly int[] BlockedKeys = new int[] { 321, 322, 323, 324, 325, 326 };
         internal static bool MovingDisabled { get; private set; } = false;
+        internal static bool MouseMovingDisabled { get; private set; } = false;
 
         internal unsafe static void EnableMoving()
         {
@@ -21,6 +22,17 @@
                     }
                 }
                 MovingDisabled = false;
+            }
+        }
+
+        internal unsafe static void EnableMouseMoving()
+        {
+            if (MouseMovingDisabled)
+            {
+                PluginLog.Debug($"Enabling Mouse Moving");
+                // Handle WASD Movement (and LMB+RMB Movement, if enabled)
+                P.Memory.DisableMouseAutoMoveHook();
+                MouseMovingDisabled = false;
             }
         }
 
@@ -44,6 +56,17 @@
                     P.Memory.ForceDisableMovement++;
                 }
                 MovingDisabled = true;
+            }
+        }
+
+        internal static void DisableMouseMoving()
+        {
+            if (!MouseMovingDisabled)
+            {
+                PluginLog.Debug($"Disabling Mouse moving");
+                // Handle LMB+RMB movement
+                P.Memory.EnableMouseAutoMoveHook();
+                MouseMovingDisabled = true;
             }
         }
     }

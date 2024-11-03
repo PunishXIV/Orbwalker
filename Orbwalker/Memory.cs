@@ -139,6 +139,7 @@ namespace Orbwalker
             InputData_IsInputIDKeyHeldHook.Enable();
             InputData_IsInputIDKeyReleasedHook.Enable();
         }
+
         internal void EnableMouseAutoMoveHook()
         {
             MouseAutoMoveHook.Enable();
@@ -153,10 +154,15 @@ namespace Orbwalker
             InputData_IsInputIDKeyReleasedHook.Disable();
         }
 
+        internal void DisableMouseAutoMoveHook()
+        {
+            MouseAutoMoveHook.Disable();
+        }
+
         public void Dispose()
         {
             DisableHooks();
-            MouseAutoMoveHook.Dispose();
+            DisableMouseAutoMoveHook();
             InputData_IsInputIDKeyPressedHook.Dispose();
             InputData_IsInputIDKeyClickedHook.Dispose();
             InputData_IsInputIDKeyHeldHook.Dispose();

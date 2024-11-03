@@ -87,6 +87,7 @@ namespace Orbwalker
             else
             {
                 MoveManager.EnableMoving();
+                MoveManager.EnableMouseMoving();
             }
         }
 
@@ -163,13 +164,22 @@ namespace Orbwalker
 
         private void HandleMovementPrevention()
         {
-            if (!C.DisableMouseDisabling || C.ControllerMode || IsStronglyLocked)
+            if (C.ControllerMode || IsStronglyLocked)
             {
                 MoveManager.DisableMoving();
             }
             else
             {
                 MoveManager.EnableMoving();
+            }
+
+            if (!C.DisableMouseDisabling)
+            {
+                MoveManager.DisableMouseMoving();
+            }
+            else
+            {
+                MoveManager.EnableMouseMoving();
             }
 
             CancelMoveKeys();
@@ -191,6 +201,7 @@ namespace Orbwalker
         private void EnableMoving()
         {
             MoveManager.EnableMoving();
+            MoveManager.EnableMouseMoving();
         }
 
         private void ResetCancelledMoveKeys()
@@ -213,6 +224,7 @@ namespace Orbwalker
         {
             Svc.Framework.Update -= Framework_Update;
             MoveManager.EnableMoving();
+            MoveManager.EnableMouseMoving();
             Memory.Dispose();
             ECommonsMain.Dispose();
         }
