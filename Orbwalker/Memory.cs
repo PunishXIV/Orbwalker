@@ -76,29 +76,17 @@ namespace Orbwalker
         internal ref int ForceDisableMovement => ref *(int*)(forceDisableMovementPtr + 4);
 
         // better for preventing mouse movements in both camera modes
-        public unsafe delegate byte MoveOnMousePreventorDelegate(MoveControllerSubMemberForMine* thisx);
-        [Signature("40 55 53 48 8D 6C 24 ?? 48 81 EC ?? ?? ?? ?? 48 83 79", DetourName = nameof(MovementUpdate), Fallibility = Fallibility.Auto)]
-        private static Hook<MoveOnMousePreventorDelegate>? MouseMovePreventerHook { get; set; } = null!;
+        public unsafe delegate void MoveOnMousePreventerDelegate(MoveControllerSubMemberForMine* thisx, float wishdir_h, float wishdir_v, char arg4, byte align_with_camera, Vector3* direction);
+        [Signature("48 8b C4 48 89 70 ?? 48 89 78 ?? 55 41 56 41 57", DetourName = nameof(MovementUpdate), Fallibility = Fallibility.Auto)]
+        public static Hook<MoveOnMousePreventerDelegate>? MouseAutoMoveHook { get; set; } = null!;
         [return: MarshalAs(UnmanagedType.U1)]
-        public unsafe byte MovementUpdate(MoveControllerSubMemberForMine* thisx) { // was static before.
-            // get the current mouse button hole state, note that because we are doing this during the move update,
-            // we are getting and updating the mouse state PRIOR to the game doing so, allowing us to change it
-            MButtonHoldState* hold = InputManager.GetMouseButtonHoldState();
-            MButtonHoldState original = *hold;
-            // modify the hold state
-            if (*hold == (MButtonHoldState.Left | MButtonHoldState.Right)) {
-                *hold = 0;
-            }
-            //PluginLog.Debug($"{((IntPtr)hold).ToString("X")}");
-            // update the original
-            byte ret = MouseMovePreventerHook.Original(thisx);
-            // restore the original
-            *hold = original;
-            // return 
-            return ret;
+        public static unsafe void MovementUpdate(MoveControllerSubMemberForMine* thisx, float wishdir_h, float wishdir_v, char arg4, byte align_with_camera, Vector3* direction)
+        {
+            if (thisx->Unk_0x3F != 0)
+                return;
+
+            MouseAutoMoveHook.Original(thisx, wishdir_h, wishdir_v, arg4, align_with_camera, direction);
         }
-
-
 
 
         delegate byte InputData_IsInputIDKeyPressedDelegate(nint a1, int key);
@@ -146,26 +134,35 @@ namespace Orbwalker
 
         internal void EnableHooks()
         {
-            MouseMovePreventerHook.Enable();            
             InputData_IsInputIDKeyPressedHook.Enable();
             InputData_IsInputIDKeyClickedHook.Enable();
             InputData_IsInputIDKeyHeldHook.Enable();
             InputData_IsInputIDKeyReleasedHook.Enable();
         }
 
+        internal void EnableMouseAutoMoveHook()
+        {
+            MouseAutoMoveHook.Enable();
+        }
+
         internal void DisableHooks()
         {
-            MouseMovePreventerHook.Disable();
+            MouseAutoMoveHook.Disable();
             InputData_IsInputIDKeyPressedHook.Disable();
             InputData_IsInputIDKeyClickedHook.Disable();
             InputData_IsInputIDKeyHeldHook.Disable();
             InputData_IsInputIDKeyReleasedHook.Disable();
         }
 
+        internal void DisableMouseAutoMoveHook()
+        {
+            MouseAutoMoveHook.Disable();
+        }
+
         public void Dispose()
         {
             DisableHooks();
-            MouseMovePreventerHook.Dispose();
+            DisableMouseAutoMoveHook();
             InputData_IsInputIDKeyPressedHook.Dispose();
             InputData_IsInputIDKeyClickedHook.Dispose();
             InputData_IsInputIDKeyHeldHook.Dispose();
@@ -177,7 +174,8 @@ namespace Orbwalker
 
 
     [StructLayout(LayoutKind.Explicit)]
-    public unsafe struct UnkGameObjectStruct {
+    public unsafe struct UnkGameObjectStruct
+    {
         [FieldOffset(0xD0)] public int Unk_0xD0;
         [FieldOffset(0x101)] public byte Unk_0x101;
         [FieldOffset(0x1C0)] public Vector3 DesiredPosition;
@@ -186,7 +184,7 @@ namespace Orbwalker
         [FieldOffset(0x1FF)] public byte Unk_0x1FF;
         [FieldOffset(0x200)] public byte Unk_0x200;
         [FieldOffset(0x2C6)] public byte Unk_0x2C6;
-        [FieldOffset(0x3D0)] public GameObject* Actor; // points to local player
+        [FieldOffset(0x3D0)] public GameObject* Actor; // Points to local player
         [FieldOffset(0x3E0)] public byte Unk_0x3E0;
         [FieldOffset(0x3EC)] public float Unk_0x3EC;
         [FieldOffset(0x3F0)] public float Unk_0x3F0;
@@ -195,22 +193,30 @@ namespace Orbwalker
     }
 
     [StructLayout(LayoutKind.Explicit)]
-    public unsafe struct MoveControllerSubMemberForMine {
+    public unsafe struct MoveControllerSubMemberForMine
+    {
         [FieldOffset(0x10)] public Vector3 Direction;
         [FieldOffset(0x20)] public UnkGameObjectStruct* ActorStruct;
-        [FieldOffset(0x28)] public uint Unk_0x28;
-        [FieldOffset(0x3C)] public byte Moved;
-        [FieldOffset(0x3D)] public byte Rotated;
+        [FieldOffset(0x28)] public float Unk_0x28;
+        [FieldOffset(0x38)] public float Unk_0x38;
+        [FieldOffset(0x3C)] public byte Moved; // 1 when the character has moved
+        [FieldOffset(0x3D)] public byte Rotated; // 1 when the character has rotated
         [FieldOffset(0x3E)] public byte MovementLock;
-        [FieldOffset(0x3F)] public byte Unk_0x3F;
+        [FieldOffset(0x3F)] public byte Unk_0x3F; // non-zero when moving with LMB+RMB
         [FieldOffset(0x40)] public byte Unk_0x40;
+        [FieldOffset(0x44)] public float MoveSpeed;
+        [FieldOffset(0x50)] public float* MoveSpeedMaximums;
         [FieldOffset(0x80)] public Vector3 ZoningPosition;
-        [FieldOffset(0xF4)] public byte Unk_0xF4;
-        [FieldOffset(0x80)] public Vector3 Unk_0x80;
         [FieldOffset(0x90)] public float MoveDir;
         [FieldOffset(0x94)] public byte Unk_0x94;
-        [FieldOffset(0xA0)] public Vector3 MoveForward;
+        [FieldOffset(0xA0)] public Vector3 MoveForward; // direction output by MovementUpdate
         [FieldOffset(0xB0)] public float Unk_0xB0;
+        [FieldOffset(0xB4)] public byte Unk_0xB4;
+        [FieldOffset(0xF2)] public byte Unk_0xF2;
+        [FieldOffset(0xF3)] public byte Unk_0xF3;
+        [FieldOffset(0xF4)] public byte Unk_0xF4;
+        [FieldOffset(0xF5)] public byte Unk_0xF5;
+        [FieldOffset(0xF6)] public byte Unk_0xF6;
         [FieldOffset(0x104)] public byte Unk_0x104;
         [FieldOffset(0x110)] public Int32 WishdirChanged;
         [FieldOffset(0x114)] public float Wishdir_Horizontal;
@@ -219,5 +225,7 @@ namespace Orbwalker
         [FieldOffset(0x121)] public byte Rotated1;
         [FieldOffset(0x122)] public byte Unk_0x122;
         [FieldOffset(0x123)] public byte Unk_0x123;
+        [FieldOffset(0x125)] public byte Unk_0x125;
+        [FieldOffset(0x12A)] public byte Unk_0x12A;
     }
 }

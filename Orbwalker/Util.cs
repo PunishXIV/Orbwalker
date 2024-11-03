@@ -102,10 +102,5 @@ namespace Orbwalker
 
             return adjustedCastTime > 0;
         }
-
-        internal static bool IsMouseMoveOrdered()
-        {
-            return IsKeyPressed((int)Keys.LButton) && IsKeyPressed((int)Keys.RButton);
-        }
     }
 }
