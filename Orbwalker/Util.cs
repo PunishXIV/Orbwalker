@@ -5,7 +5,7 @@ using ECommons.GameHelpers;
 using ECommons.MathHelpers;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using ImGuiScene;
-using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel.Sheets;
 using PInvoke;
 using System;
 using System.Collections.Generic;
@@ -68,7 +68,7 @@ namespace Orbwalker
             if (!Player.Available) return false;
             if (Svc.ClientState.IsPvP && !C.PVP) return false;
             
-            Job currentJob = (Job)Player.Object.ClassJob.Id;
+            Job currentJob = (Job)Player.Object.ClassJob.RowId;
 
             if (!P.Config.EnabledJobs.ContainsKey(currentJob)) return false;
             return P.Config.EnabledJobs[currentJob];
@@ -88,11 +88,11 @@ namespace Orbwalker
         internal static bool IsActionCastable(uint id)
         {
             if (GetMovePreventionActions().Contains(id)) return true;
-            var actionSheet = Svc.Data.GetExcelSheet<Lumina.Excel.GeneratedSheets.Action>();
+            var actionSheet = Svc.Data.GetExcelSheet<Lumina.Excel.Sheets.Action>();
             id = ActionManager.Instance()->GetAdjustedActionId(id);
             var actionRow = actionSheet.GetRow(id);
 
-            if (actionRow?.Cast100ms <= 0)
+            if (actionRow.Cast100ms <= 0)
             {
                 return false;
             }
