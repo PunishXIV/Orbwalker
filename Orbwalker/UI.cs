@@ -4,7 +4,7 @@ using ECommons.ExcelServices;
 using ECommons.GameFunctions;
 using ECommons.Gamepad;
 using FFXIVClientStructs.FFXIV.Client.Game;
-using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel.Sheets;
 using Orbwalker;
 using PunishLib;
 using PunishLib.ImGuiMethods;

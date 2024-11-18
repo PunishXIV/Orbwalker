@@ -52,7 +52,7 @@ namespace Orbwalker
                 {
                     InternalLog.Verbose($"{type}, {acId}, {target}");
 
-                    if (Svc.Data.GetExcelSheet<Lumina.Excel.GeneratedSheets.Action>().GetRow(acId).NotNull(out var sheetAct) && sheetAct.TargetArea && sheetAct.Cast100ms > 0)
+                    if (Svc.Data.GetExcelSheet<Lumina.Excel.Sheets.Action>().GetRow(acId).NotNull(out var sheetAct) && sheetAct.TargetArea && sheetAct.Cast100ms > 0)
                         P.BlockMovementUntil = Environment.TickCount64 + (long)(P.Config.GroundedHold * 1000);
 
                     // was ActionType.Spell before, changed because outdated
