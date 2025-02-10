@@ -12,6 +12,8 @@ namespace Orbwalker
 {
     internal unsafe class Memory : IDisposable
     {
+        public static bool IsMouseMoving = false; //For the IPC
+
         internal delegate bool UseActionDelegate(ActionManager* am, ActionType type, uint acId, long target, uint a5, uint a6, uint a7, void* a8);
         internal Hook<UseActionDelegate> UseActionHook;
         internal Memory()
@@ -82,7 +84,8 @@ namespace Orbwalker
         [return: MarshalAs(UnmanagedType.U1)]
         public static unsafe void MovementUpdate(MoveControllerSubMemberForMine* thisx, float wishdir_h, float wishdir_v, char arg4, byte align_with_camera, Vector3* direction)
         {
-            if (thisx->Unk_0x3F != 0)
+            IsMouseMoving = thisx->Unk_0x3F != 0;
+            if (IsMouseMoving)
                 return;
 
             MouseAutoMoveHook.Original(thisx, wishdir_h, wishdir_v, arg4, align_with_camera, direction);
