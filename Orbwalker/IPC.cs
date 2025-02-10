@@ -19,7 +19,6 @@ namespace Orbwalker
         [EzIPC] public bool ControllerModeEnabled() => C.ControllerMode;
         [EzIPC] public bool MouseButtonReleaseEnabled() => C.DisableMouseDisabling;
         [EzIPC] public bool PvPEnabled() => C.PVP;
-        [EzIPC] public bool IsMouseMoving() => Memory.IsMouseMoving;
 
 
         [EzIPC] public void SetPluginEnabled(bool v) => C.Enabled = v;
