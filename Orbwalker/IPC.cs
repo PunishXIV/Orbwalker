@@ -1,4 +1,5 @@
-﻿using ECommons.EzIpcManager;
+﻿using ECommons.ExcelServices;
+using ECommons.EzIpcManager;
 using System.Windows.Forms;
 
 namespace Orbwalker
@@ -19,6 +20,7 @@ namespace Orbwalker
         [EzIPC] public bool ControllerModeEnabled() => C.ControllerMode;
         [EzIPC] public bool MouseButtonReleaseEnabled() => C.DisableMouseDisabling;
         [EzIPC] public bool PvPEnabled() => C.PVP;
+        [EzIPC] public List<uint> EnabledJobs() => C.EnabledJobs.Where(x => x.Value).SelectMulti(x => (uint)x.Key).ToList();
 
 
         [EzIPC] public void SetPluginEnabled(bool v) => C.Enabled = v;
@@ -28,6 +30,7 @@ namespace Orbwalker
         [EzIPC] public void SetControllerMode(bool v) => C.ControllerMode = v;
         [EzIPC] public void SetMouseButtonRelease(bool v) => C.DisableMouseDisabling = v;
         [EzIPC] public void SetPvP(bool v) => C.PVP = v;
+        [EzIPC] public void SetEnabledJob(uint job, bool v) => C.EnabledJobs[(Job)job] = v;
 
     }
 }
