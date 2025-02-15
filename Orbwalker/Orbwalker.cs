@@ -47,7 +47,7 @@ namespace Orbwalker
         {
             if (Player.Object.IsCasting)
             {
-                if(Util.CheckTpRetMnt(Player.Object.CastActionId, (ActionType)Player.Object.CastActionType)) return false;
+                if(Util.CheckTpRetMnt(Player.Object.CastActionId, (ActionType)Player.Object.CastActionType) || Util.CastingWalkableAction(Player.Object.CastActionId)) return false;
                 if (C.BlockMount && Player.Object.CastActionType == (byte)ActionType.Mount)
                 {
                     BlockMovementUntil = Environment.TickCount64 + 100;

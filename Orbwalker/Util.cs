@@ -87,6 +87,7 @@ namespace Orbwalker
 
         internal static bool IsActionCastable(uint id)
         {
+            if (CastingWalkableAction(id)) return false;
             if (GetMovePreventionActions().Contains(id)) return true;
             var actionSheet = Svc.Data.GetExcelSheet<Lumina.Excel.Sheets.Action>();
             id = ActionManager.Instance()->GetAdjustedActionId(id);
@@ -101,6 +102,11 @@ namespace Orbwalker
             var adjustedCastTime = ActionManager.GetAdjustedCastTime(ActionType.Action, id);
 
             return adjustedCastTime > 0;
+        }
+
+        internal static bool CastingWalkableAction(uint id)
+        {
+            return id is 29391 or 29402;
         }
     }
 }
