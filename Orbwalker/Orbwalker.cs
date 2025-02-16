@@ -17,6 +17,7 @@ namespace Orbwalker
         internal static Orbwalker P;
         internal Memory Memory;
         internal Config Config;
+        internal IPC IPC;
         bool WasCancelled = false;
         internal bool ShouldUnlock = false;
         bool IsReleaseButtonHeld = false;
@@ -39,13 +40,14 @@ namespace Orbwalker
                 EzConfigGui.WindowSystem.AddWindow(new Overlay());
                 Memory.EnableDisableBuffer();
             });
+            IPC = new();
         }
 
         bool IsCasting()
         {
             if (Player.Object.IsCasting)
             {
-                if(Util.CheckTpRetMnt(Player.Object.CastActionId, (ActionType)Player.Object.CastActionType)) return false;
+                if(Util.CheckTpRetMnt(Player.Object.CastActionId, (ActionType)Player.Object.CastActionType) || Util.CastingWalkableAction(Player.Object.CastActionId)) return false;
                 if (C.BlockMount && Player.Object.CastActionType == (byte)ActionType.Mount)
                 {
                     BlockMovementUntil = Environment.TickCount64 + 100;
