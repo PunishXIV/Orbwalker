@@ -1,112 +1,99 @@
-using Dalamud.Interface.Internal;
-using ECommons;
+using Dalamud.Interface.Textures.TextureWraps;
 using ECommons.ExcelServices;
 using ECommons.GameHelpers;
-using ECommons.MathHelpers;
 using FFXIVClientStructs.FFXIV.Client.Game;
-using ImGuiScene;
-using Lumina.Excel.Sheets;
-using PInvoke;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using Dalamud.Interface.Textures.TextureWraps;
+using Lumina.Excel;
+using Action = Lumina.Excel.Sheets.Action;
 
-namespace Orbwalker
+namespace Orbwalker;
+
+internal static unsafe class Util
 {
-    internal unsafe static class Util
+    internal static float GCD
     {
-        internal static bool CheckTpRetMnt(uint acId, ActionType acType)
+        get
         {
-            if (acId == Data.Teleport && !C.BlockTP) return true;
-            if (acId == Data.Return && !C.BlockReturn) return true;
-            if (acType == ActionType.Mount && !C.BlockMount) return true;
+            RecastDetail* cd = ActionManager.Instance()->GetRecastGroupDetail(57);
+            return cd->IsActive == 0 ? 0 : cd->Total - cd->Elapsed;
+        }
+    }
+    internal static bool CheckTpRetMnt(uint acId, ActionType acType)
+    {
+        if (acId == Data.Teleport && !C.BlockTP) return true;
+        if (acId == Data.Return && !C.BlockReturn) return true;
+        return false;
+    }
+
+    internal static IEnumerable<uint> GetMovePreventionActions()
+    {
+        if (C.PreventFlame)
+            foreach(uint x in Data.FlamethrowerAction)
+                yield return x;
+        if (C.PreventImprov)
+            foreach(uint x in Data.ImprovisationAction)
+                yield return x;
+        if (C.PreventPassage)
+            foreach(uint x in Data.PassageAction)
+                yield return x;
+        if (C.PreventPhantom)
+            foreach(uint x in Data.PhantomFlurryAction)
+                yield return x;
+    }
+
+    internal static IEnumerable<uint> GetMovePreventionStatuses()
+    {
+        if (C.PreventFlame) yield return Data.FlamethrowerBuff;
+        if (C.PreventImprov) yield return Data.ImprovisationBuff;
+        if (C.PreventPassage) yield return Data.PassageBuff;
+        if (C.PreventPhantom) yield return Data.PhantomFlurryBuff;
+    }
+
+    internal static float GetRCorGDC()
+    {
+        float castTimeRemaining = Player.Object.CastActionId != 0
+            ? Player.Object.TotalCastTime - Player.Object.CurrentCastTime
+            : 0;
+
+        return Math.Max(castTimeRemaining, GCD);
+    }
+
+    internal static bool CanUsePlugin()
+    {
+        if (!Player.Available) return false;
+        if (Svc.ClientState.IsPvP && !C.PVP) return false;
+
+        Job currentJob = (Job)Player.Object.ClassJob.RowId;
+
+        if (!P.Config.EnabledJobs.ContainsKey(currentJob)) return false;
+        return P.Config.EnabledJobs[currentJob];
+
+        //if (currentJob == Job.PLD && C.PreventPassage) return true;
+        //if (currentJob == Job.DNC && C.PreventImprov) return true;
+        //if (currentJob == Job.MCH && C.PreventFlame) return true;
+        //if (currentJob == Job.NIN && C.PreventTCJ) return true;
+        //return currentJob.EqualsAny(Job.SMN, Job.ACN, Job.RDM, Job.BLM, Job.THM, Job.WHM, Job.CNJ, Job.SCH, Job.AST, Job.SGE, Job.RPR, Job.SAM, Job.BLU);
+    }
+
+    internal static Vector2 GetSize(this IDalamudTextureWrap t, float height) => new(t.Width * (height / t.Height), height);
+
+    internal static bool IsActionCastable(uint id)
+    {
+        if (CastingWalkableAction(id)) return false;
+        if (GetMovePreventionActions().Contains(id)) return true;
+        ExcelSheet<Action> actionSheet = Svc.Data.GetExcelSheet<Action>();
+        id = ActionManager.Instance()->GetAdjustedActionId(id);
+        Action actionRow = actionSheet.GetRow(id);
+
+        if (actionRow.Cast100ms <= 0)
+        {
             return false;
         }
 
-        internal static IEnumerable<uint> GetMovePreventionActions()
-        {
-            if (C.PreventFlame) foreach (var x in Data.FlamethrowerAction) yield return x;
-            if (C.PreventImprov) foreach (var x in Data.ImprovisationAction) yield return x;
-            if (C.PreventPassage) foreach (var x in Data.PassageAction) yield return x;
-            if (C.PreventTCJ) foreach (var x in Data.TCJAction) yield return x;
-			if (C.PreventPhantom) foreach (var x in Data.PhantomFlurryAction) yield return x;
-		}
+        ActionManager* actionManager = ActionManager.Instance();
+        int adjustedCastTime = ActionManager.GetAdjustedCastTime(ActionType.Action, id);
 
-        internal static IEnumerable<uint> GetMovePreventionStatuses()
-        {
-            if (C.PreventFlame) yield return Data.FlamethrowerBuff;
-            if (C.PreventImprov)  yield return Data.ImprovisationBuff;
-            if (C.PreventPassage)  yield return Data.PassageBuff;
-            if (C.PreventTCJ)  yield return Data.TCJBuff;
-			if (C.PreventPhantom) yield return Data.PhantomFlurryBuff;
-		}
-
-        internal static float GCD
-        {
-            get
-            {
-                var cd = ActionManager.Instance()->GetRecastGroupDetail(57);
-                return cd->IsActive == 0 ? 0 : cd->Total - cd->Elapsed;
-            }
-        }
-
-        internal static float GetRCorGDC()
-        {
-            float castTimeRemaining = Player.Object.CastActionId != 0
-                ? Player.Object.TotalCastTime - Player.Object.CurrentCastTime
-                : 0;
-        
-            return Math.Max(castTimeRemaining, GCD);
-        }
-
-        internal static bool CanUsePlugin()
-        {
-            if (!Player.Available) return false;
-            if (Svc.ClientState.IsPvP && !C.PVP) return false;
-            
-            Job currentJob = (Job)Player.Object.ClassJob.RowId;
-
-            if (!P.Config.EnabledJobs.ContainsKey(currentJob)) return false;
-            return P.Config.EnabledJobs[currentJob];
-
-            //if (currentJob == Job.PLD && C.PreventPassage) return true;
-            //if (currentJob == Job.DNC && C.PreventImprov) return true;
-            //if (currentJob == Job.MCH && C.PreventFlame) return true;
-            //if (currentJob == Job.NIN && C.PreventTCJ) return true;
-            //return currentJob.EqualsAny(Job.SMN, Job.ACN, Job.RDM, Job.BLM, Job.THM, Job.WHM, Job.CNJ, Job.SCH, Job.AST, Job.SGE, Job.RPR, Job.SAM, Job.BLU);
-        }
-
-        internal static Vector2 GetSize(this IDalamudTextureWrap t, float height)
-        {
-            return new Vector2(t.Width * (height / t.Height), height);
-        }
-
-        internal static bool IsActionCastable(uint id)
-        {
-            if (CastingWalkableAction(id)) return false;
-            if (GetMovePreventionActions().Contains(id)) return true;
-            var actionSheet = Svc.Data.GetExcelSheet<Lumina.Excel.Sheets.Action>();
-            id = ActionManager.Instance()->GetAdjustedActionId(id);
-            var actionRow = actionSheet.GetRow(id);
-
-            if (actionRow.Cast100ms <= 0)
-            {
-                return false;
-            }
-
-            var actionManager = ActionManager.Instance();
-            var adjustedCastTime = ActionManager.GetAdjustedCastTime(ActionType.Action, id);
-
-            return adjustedCastTime > 0;
-        }
-
-        internal static bool CastingWalkableAction(uint id)
-        {
-            return id is 29391 or 29402;
-        }
+        return adjustedCastTime > 0;
     }
+
+    internal static bool CastingWalkableAction(uint id) => id is 29391 or 29402;
 }
