@@ -2,8 +2,6 @@
 global using System;
 global using System.Collections.Generic;
 global using System.Linq;
-global using System.Text;
-global using System.Threading.Tasks;
 global using Dalamud.Plugin;
 global using ImGuiNET;
 global using ECommons.DalamudServices;
@@ -19,4 +17,3 @@ global using ECommons.Schedulers;
 global using static Orbwalker.Orbwalker;
 global using Dalamud.Game.ClientState.Conditions;
 global using ECommons.DalamudServices.Legacy;
-global using Dalamud.Interface.Utility;

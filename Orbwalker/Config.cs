@@ -2,11 +2,6 @@
 using Dalamud.Game.ClientState.Keys;
 using ECommons.Configuration;
 using ECommons.ExcelServices;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Orbwalker
@@ -40,7 +35,6 @@ namespace Orbwalker
         public float GroundedHold = 1f;
 
         public bool PreventPassage = false;
-        public bool PreventTCJ = false;
         public bool PreventFlame = false;
         public bool PreventImprov = false;
 		public bool PreventPhantom = false;
@@ -49,7 +43,6 @@ namespace Orbwalker
         public bool PVP = false;
         public bool BlockTP = false;
         public bool BlockReturn = false;
-        public bool BlockMount = false;
 
         public Dictionary<Job, bool> EnabledJobs = new();
     }
