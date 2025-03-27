@@ -95,7 +95,7 @@ namespace Orbwalker
 
         private void PerformDelayedAction()
         {
-            if (DelayedAction != null && DelayedAction.actionId != 0 && AgentMap.Instance()->IsPlayerMoving == 0 &&
+            if (DelayedAction != null && DelayedAction.actionId != 0 && !AgentMap.Instance()->IsPlayerMoving &&
                 Player.Available)
             {
                 var actionManager = ActionManager.Instance();
