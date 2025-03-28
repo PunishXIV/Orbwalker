@@ -89,7 +89,7 @@ internal static unsafe class Util
             return false;
         }
 
-        ActionManager* actionManager = ActionManager.Instance();
+        ActionManager.Instance();
         int adjustedCastTime = ActionManager.GetAdjustedCastTime(ActionType.Action, id);
 
         return adjustedCastTime > 0;
