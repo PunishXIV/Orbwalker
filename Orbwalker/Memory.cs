@@ -2,40 +2,21 @@
 using Dalamud.Utility.Signatures;
 using ECommons.Hooks;
 using FFXIVClientStructs.FFXIV.Client.Game;
-using FFXIVClientStructs.FFXIV.Client.Game.Object;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
-using Action = Lumina.Excel.Sheets.Action;
+using FFXIVClientStructs.FFXIV.Client.Game.Object;
 
 namespace Orbwalker;
 
 internal unsafe class Memory : IDisposable
 {
-    // better for preventing mouse movements in both camera modes
-    public delegate void MoveOnMousePreventerDelegate(MoveControllerSubMemberForMine* thisx, float wishdir_h, float wishdir_v, char arg4, byte align_with_camera, Vector3* direction);
-
-    [Signature("F3 0F 10 05 ?? ?? ?? ?? 0F 2E C7", ScanType = ScanType.StaticAddress, Fallibility = Fallibility.Infallible)]
-    private nint forceDisableMovementPtr;
-    
-    [Signature("48 89 5C 24 ?? 56 41 56 41 57 48 83 EC 20 48 63 C2", DetourName = nameof(InputData_IsInputIDKeyClickedDetour), Fallibility = Fallibility.Infallible)]
-    private Hook<InputData_IsInputIDKeyClickedDelegate> InputData_IsInputIDKeyClickedHook;
-    
-    [Signature("E8 ?? ?? ?? ?? 84 C0 74 35 EB 05", DetourName = nameof(InputData_IsInputIDKeyHeldDetour), Fallibility = Fallibility.Infallible)]
-    private Hook<InputData_IsInputIDKeyHeldDelegate> InputData_IsInputIDKeyHeldHook;
-    
-    [Signature("E8 ?? ?? ?? ?? 33 DB 41 8B D5", DetourName = nameof(InputData_IsInputIDKeyPressedDetour), Fallibility = Fallibility.Infallible)]
-    private Hook<InputData_IsInputIDKeyPressedDelegate> InputData_IsInputIDKeyPressedHook;
-    
-    [Signature("E8 ?? ?? ?? ?? 88 43 0F", DetourName = nameof(InputData_IsInputIDKeyReleasedDetour), Fallibility = Fallibility.Infallible)]
-    private Hook<InputData_IsInputIDKeyReleasedDelegate> InputData_IsInputIDKeyReleasedHook;
-    
+    internal delegate bool UseActionDelegate(ActionManager* am, ActionType type, uint acId, long target, uint a5, uint a6, uint a7, void* a8);
     internal Hook<UseActionDelegate> UseActionHook;
-    
     internal Memory()
     {
         UseActionHook = Svc.Hook.HookFromAddress<UseActionDelegate>((nint)ActionManager.MemberFunctionPointers.UseAction, UseActionDetour);
         SignatureHelper.Initialise(this);
         PluginLog.Debug($"forceDisableMovementPtr = {forceDisableMovementPtr:X16}");
-        SendAction.Init((targetObjectId, actionType, actionId, sequence, a5, a6, a7, a8, a9) =>
+        SendAction.Init((long targetObjectId, byte actionType, uint actionId, ushort sequence, long a5, long a6, long a7, long a8, long a9) =>
         {
             if (Util.GetMovePreventionActions().Contains(actionId))
             {
@@ -44,34 +25,19 @@ internal unsafe class Memory : IDisposable
             }
         });
     }
-    internal ref int ForceDisableMovement => ref *(int*)(forceDisableMovementPtr + 4);
-    [Signature("48 8b C4 48 89 70 ?? 48 89 78 ?? 55 41 56 41 57", DetourName = nameof(MovementUpdate), Fallibility = Fallibility.Auto)]
-    public static Hook<MoveOnMousePreventerDelegate>? MouseAutoMoveHook { get; set; } = null!;
-
-    public void Dispose()
-    {
-        DisableHooks();
-        DisableMouseAutoMoveHook();
-        InputData_IsInputIDKeyPressedHook.Dispose();
-        InputData_IsInputIDKeyClickedHook.Dispose();
-        InputData_IsInputIDKeyHeldHook.Dispose();
-        InputData_IsInputIDKeyReleasedHook.Dispose();
-        UseActionHook.Disable();
-        UseActionHook.Dispose();
-    }
 
     internal void EnableDisableBuffer()
     {
-        bool enabled = C.Enabled && C.Buffer;
-        if (enabled && !UseActionHook.IsEnabled)
+        var enabled = C.Enabled && C.Buffer;
+        if(enabled && !UseActionHook.IsEnabled)
         {
             UseActionHook.Enable();
-            PluginLog.Debug("UseActionHook enabled");
+            PluginLog.Debug($"UseActionHook enabled");
         }
         if (!enabled && UseActionHook.IsEnabled)
         {
             UseActionHook.Disable();
-            PluginLog.Debug("UseActionHook disabled");
+            PluginLog.Debug($"UseActionHook disabled");
         }
     }
 
@@ -83,7 +49,7 @@ internal unsafe class Memory : IDisposable
             {
                 InternalLog.Verbose($"{type}, {acId}, {target}");
 
-                if (Svc.Data.GetExcelSheet<Action>().GetRow(acId).NotNull(out Action sheetAct) && sheetAct.TargetArea && sheetAct.Cast100ms > 0)
+                if (Svc.Data.GetExcelSheet<Lumina.Excel.Sheets.Action>().GetRow(acId).NotNull(out var sheetAct) && sheetAct.TargetArea && sheetAct.Cast100ms > 0)
                     P.BlockMovementUntil = Environment.TickCount64 + (long)(P.Config.GroundedHold * 1000);
 
                 // was ActionType.Spell before, changed because outdated
@@ -93,46 +59,70 @@ internal unsafe class Memory : IDisposable
                     return false;
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 e.Log();
             }
         }
-        bool ret = UseActionHook.Original(am, type, acId, target, a5, a6, a7, a8);
+        var ret = UseActionHook.Original(am, type, acId, target, a5, a6, a7, a8);
         return ret;
     }
+
+    [Signature("F3 0F 10 05 ?? ?? ?? ?? 0F 2E C7", ScanType = ScanType.StaticAddress, Fallibility = Fallibility.Infallible)]
+    private nint forceDisableMovementPtr;
+    internal ref int ForceDisableMovement => ref *(int*)(forceDisableMovementPtr + 4);
+
+    // better for preventing mouse movements in both camera modes
+    public unsafe delegate void MoveOnMousePreventerDelegate(MoveControllerSubMemberForMine* thisx, float wishdir_h, float wishdir_v, char arg4, byte align_with_camera, Vector3* direction);
+    [Signature("48 8b C4 48 89 70 ?? 48 89 78 ?? 55 41 56 41 57", DetourName = nameof(MovementUpdate), Fallibility = Fallibility.Auto)]
+    public static Hook<MoveOnMousePreventerDelegate>? MouseAutoMoveHook { get; set; } = null!;
     [return: MarshalAs(UnmanagedType.U1)]
-    
-    public static void MovementUpdate(MoveControllerSubMemberForMine* thisx, float wishdir_h, float wishdir_v, char arg4, byte align_with_camera, Vector3* direction)
+    public static unsafe void MovementUpdate(MoveControllerSubMemberForMine* thisx, float wishdir_h, float wishdir_v, char arg4, byte align_with_camera, Vector3* direction)
     {
         if (thisx->Unk_0x3F != 0)
             return;
 
         MouseAutoMoveHook.Original(thisx, wishdir_h, wishdir_v, arg4, align_with_camera, direction);
     }
-    
-    private byte InputData_IsInputIDKeyPressedDetour(nint a1, int key)
+
+
+    delegate byte InputData_IsInputIDKeyPressedDelegate(nint a1, int key);
+    [Signature("E8 ?? ?? ?? ?? 33 DB 41 8B D5", DetourName =nameof(InputData_IsInputIDKeyPressedDetour), Fallibility = Fallibility.Infallible)]
+    Hook<InputData_IsInputIDKeyPressedDelegate> InputData_IsInputIDKeyPressedHook;
+    byte InputData_IsInputIDKeyPressedDetour(nint a1, int key)
     {
         //InternalLog.Verbose($"Pressed: {key}");
         if (key.EqualsAny(MoveManager.BlockedKeys)) return 0;
         return InputData_IsInputIDKeyPressedHook.Original(a1, key);
     }
-    
-    private byte InputData_IsInputIDKeyClickedDetour(nint a1, int key)
+
+
+    delegate byte InputData_IsInputIDKeyClickedDelegate(nint a1, int key);
+    [Signature("48 89 5C 24 ?? 56 41 56 41 57 48 83 EC 20 48 63 C2", DetourName = nameof(InputData_IsInputIDKeyClickedDetour), Fallibility = Fallibility.Infallible)]
+    Hook<InputData_IsInputIDKeyClickedDelegate> InputData_IsInputIDKeyClickedHook;
+    byte InputData_IsInputIDKeyClickedDetour(nint a1, int key)
     {
         //InternalLog.Verbose($"Clicked: {key}");
         if (key.EqualsAny(MoveManager.BlockedKeys)) return 0;
         return InputData_IsInputIDKeyClickedHook.Original(a1, key);
     }
-    
-    private byte InputData_IsInputIDKeyHeldDetour(nint a1, int key)
+
+
+    delegate byte InputData_IsInputIDKeyHeldDelegate(nint a1, int key);
+    [Signature("E8 ?? ?? ?? ?? 84 C0 74 35 EB 05", DetourName = nameof(InputData_IsInputIDKeyHeldDetour), Fallibility = Fallibility.Infallible)]
+    Hook<InputData_IsInputIDKeyHeldDelegate> InputData_IsInputIDKeyHeldHook;
+    byte InputData_IsInputIDKeyHeldDetour(nint a1, int key)
     {
         //InternalLog.Verbose($"Held: {key}");
         if (key.EqualsAny(MoveManager.BlockedKeys)) return 0;
         return InputData_IsInputIDKeyHeldHook.Original(a1, key);
     }
-    
-    private byte InputData_IsInputIDKeyReleasedDetour(nint a1, int key)
+
+
+    delegate byte InputData_IsInputIDKeyReleasedDelegate(nint a1, int key);
+    [Signature("E8 ?? ?? ?? ?? 88 43 0F", DetourName = nameof(InputData_IsInputIDKeyReleasedDetour), Fallibility = Fallibility.Infallible)]
+    Hook<InputData_IsInputIDKeyReleasedDelegate> InputData_IsInputIDKeyReleasedHook;
+    byte InputData_IsInputIDKeyReleasedDetour(nint a1, int key)
     {
         //InternalLog.Verbose($"Released: {key}");
         if (key.EqualsAny(MoveManager.BlockedKeys)) return 0;
@@ -165,17 +155,20 @@ internal unsafe class Memory : IDisposable
     {
         MouseAutoMoveHook.Disable();
     }
-    
-    internal delegate bool UseActionDelegate(ActionManager* am, ActionType type, uint acId, long target, uint a5, uint a6, uint a7, void* a8);
-    
-    private delegate byte InputData_IsInputIDKeyPressedDelegate(nint a1, int key);
-    
-    private delegate byte InputData_IsInputIDKeyClickedDelegate(nint a1, int key);
-    
-    private delegate byte InputData_IsInputIDKeyHeldDelegate(nint a1, int key);
 
-    private delegate byte InputData_IsInputIDKeyReleasedDelegate(nint a1, int key);
+    public void Dispose()
+    {
+        DisableHooks();
+        DisableMouseAutoMoveHook();
+        InputData_IsInputIDKeyPressedHook.Dispose();
+        InputData_IsInputIDKeyClickedHook.Dispose();
+        InputData_IsInputIDKeyHeldHook.Dispose();
+        InputData_IsInputIDKeyReleasedHook.Dispose();
+        UseActionHook.Disable();
+        UseActionHook.Dispose();
+    }
 }
+
 
 [StructLayout(LayoutKind.Explicit)]
 public unsafe struct UnkGameObjectStruct
