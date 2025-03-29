@@ -1,5 +1,6 @@
 using Dalamud.Interface.Textures.TextureWraps;
 using ECommons.ExcelServices;
+using ECommons.GameFunctions;
 using ECommons.GameHelpers;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using Lumina.Excel;
@@ -78,7 +79,7 @@ internal static unsafe class Util
 
     internal static bool IsActionCastable(uint id)
     {
-        if (CastingWalkableAction(id)) return false;
+        if (CastingWalkableAction()) return false;
         if (GetMovePreventionActions().Contains(id)) return true;
         ExcelSheet<Action> actionSheet = Svc.Data.GetExcelSheet<Action>();
         id = ActionManager.Instance()->GetAdjustedActionId(id);
@@ -95,5 +96,12 @@ internal static unsafe class Util
         return adjustedCastTime > 0;
     }
 
-    internal static bool CastingWalkableAction(uint id) => id is 29391 or 29402;
+    internal static bool CastingWalkableAction()
+    {
+        var id = Player.Object.CastActionId;
+        if (id is 29391 or 29402 || Player.Object.CastActionType == (byte)ActionType.Mount)
+            return true;
+
+        return false;
+    }
 }

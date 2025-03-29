@@ -59,7 +59,7 @@ public unsafe class Orbwalker : IDalamudPlugin
     {
         if (Player.Object.IsCasting)
         {
-            if (Util.CheckTpRetMnt(Player.Object.CastActionId, (ActionType)Player.Object.CastActionType) || Util.CastingWalkableAction(Player.Object.CastActionId)) return false;
+            if (Util.CheckTpRetMnt(Player.Object.CastActionId, (ActionType)Player.Object.CastActionType) || Util.CastingWalkableAction()) return false;
         }
 
         return C.IsSlideAuto

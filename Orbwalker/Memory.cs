@@ -53,7 +53,7 @@ internal unsafe class Memory : IDisposable
                     P.BlockMovementUntil = Environment.TickCount64 + (long)(P.Config.GroundedHold * 1000);
 
                 // was ActionType.Spell before, changed because outdated
-                if (P.DelayedAction == null && ((type == ActionType.Action && Util.IsActionCastable(acId)) || type == ActionType.Mount) && Util.GCD == 0 && AgentMap.Instance()->IsPlayerMoving && !am->ActionQueued && !Util.CheckTpRetMnt(acId, type))
+                if (P.DelayedAction == null && type == ActionType.Action && Util.IsActionCastable(acId) && Util.GCD == 0 && AgentMap.Instance()->IsPlayerMoving && !am->ActionQueued && !Util.CheckTpRetMnt(acId, type))
                 {
                     P.DelayedAction = new(acId, type, 0, target, a5, a6, a7, a8);
                     return false;
