@@ -15,7 +15,7 @@ internal static unsafe class Util
         get
         {
             RecastDetail* cd = ActionManager.Instance()->GetRecastGroupDetail(57);
-            return cd->IsActive == 0 ? 0 : cd->Total - cd->Elapsed;
+            return !cd->IsActive ? 0 : cd->Total - cd->Elapsed;
         }
     }
     internal static bool CheckTpRetMnt(uint acId, ActionType acType)
