@@ -66,13 +66,13 @@ internal static unsafe class UI
         if (ThreadLoadImageHandler.TryGetTextureWrap(Path.Combine(Svc.PluginInterface.AssemblyLocation.DirectoryName, "res", "q.png"), out var t))
         {
             ImGui.SetCursorPosX(ImGui.GetContentRegionAvail().X - 20);
-            ImGui.Image(t.ImGuiHandle, new(20, 20));
+            ImGui.Image(t.Handle, new Vector2(20, 20));
             if (ImGui.IsItemHovered())
             {
                 ImGui.BeginTooltip();
                 if (ThreadLoadImageHandler.TryGetTextureWrap(Path.Combine(Svc.PluginInterface.AssemblyLocation.DirectoryName, "res", "t.png"), out var t2))
                 {
-                    ImGui.Image(t2.ImGuiHandle, new Vector2(t2.Width, t2.Height));
+                    ImGui.Image(t2.Handle, new Vector2(t2.Width, t2.Height));
                 }
                 ImGui.EndTooltip();
                 if (ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Right))

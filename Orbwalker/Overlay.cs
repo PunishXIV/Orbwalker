@@ -21,7 +21,7 @@ internal class Overlay : Window
         {
             if (ThreadLoadImageHandler.TryGetTextureWrap(GetImagePath("slidecast_" + (!P.ShouldUnlock && !C.ForceStopMoveCombat ? "g" : "w")), out IDalamudTextureWrap texture))
             {
-                if (ImGui.ImageButton(texture.ImGuiHandle, texture.GetSize(40 * C.SizeMod), Vector2.Zero, Vector2.One, (int)(10f * C.SizeMod)))
+                if (ImGui.ImageButton(texture.Handle, texture.GetSize(40 * C.SizeMod), Vector2.Zero, Vector2.One, (int)(10f * C.SizeMod)))
                 {
                     C.UnlockPermanently = false;
                     C.ForceStopMoveCombat = false;
@@ -33,7 +33,7 @@ internal class Overlay : Window
         {
             if (ThreadLoadImageHandler.TryGetTextureWrap(GetImagePath("lockslide_" + (!P.ShouldUnlock && C.ForceStopMoveCombat ? "g" : "w")), out IDalamudTextureWrap texture))
             {
-                if (ImGui.ImageButton(texture.ImGuiHandle, texture.GetSize(40 * C.SizeMod), Vector2.Zero, Vector2.One, (int)(10f * C.SizeMod)))
+                if (ImGui.ImageButton(texture.Handle, texture.GetSize(40 * C.SizeMod), Vector2.Zero, Vector2.One, (int)(10f * C.SizeMod)))
                 {
                     C.UnlockPermanently = false;
                     C.ForceStopMoveCombat = true;
@@ -48,7 +48,7 @@ internal class Overlay : Window
         {
             if (ThreadLoadImageHandler.TryGetTextureWrap(GetImagePath("disabled_" + (P.ShouldUnlock ? "g" : "w")), out IDalamudTextureWrap texture))
             {
-                if (ImGui.ImageButton(texture.ImGuiHandle, texture.GetSize(40 * C.SizeMod), Vector2.Zero, Vector2.One, (int)(10f * C.SizeMod)))
+                if (ImGui.ImageButton(texture.Handle, texture.GetSize(40 * C.SizeMod), Vector2.Zero, Vector2.One, (int)(10f * C.SizeMod)))
                 {
                     C.UnlockPermanently = !C.UnlockPermanently;
                 }
