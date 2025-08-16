@@ -28,6 +28,7 @@ public class Config : IEzConfig
     public bool DisplayBattle = true;
     public bool DisplayDuty = true;
     public bool DisplayAlways = false;
+    public bool DisplayVertical = false;
     public bool IsHoldToRelease = true;
     public bool IsSlideAuto = true;
     public float Threshold = 0.5f;

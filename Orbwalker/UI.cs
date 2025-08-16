@@ -177,9 +177,12 @@ internal static unsafe class UI
         Spacing(true); ImGui.Checkbox($"In Combat", ref C.DisplayBattle);
         Spacing(true); ImGui.Checkbox($"In Duty", ref C.DisplayDuty);
         Spacing(true); ImGui.Checkbox($"Always", ref C.DisplayAlways);
-        Spacing();
+        Spacing(true);
         ImGui.SetNextItemWidth(100f);
         ImGui.SliderFloat($"Overlay scale", ref C.SizeMod.ValidateRange(0.5f, 2f), 0.8f, 1.2f);
+        Spacing();
+        ImGui.Checkbox($"Vertical layout", ref C.DisplayVertical);
+        ImGuiComponents.HelpMarker("Display buttons vertically instead of horizontally.");
 
         ImGuiGroup.EndGroupBox();
     }
