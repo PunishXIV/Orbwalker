@@ -1,4 +1,4 @@
-<Project Sdk="Dalamud.NET.Sdk/13.0.0">
+﻿<Project Sdk="Dalamud.NET.Sdk/13.0.0">
 	<PropertyGroup>
 		<Authors>Puni.sh</Authors>
 		<Version>1.0.1.4</Version>
@@ -9,6 +9,7 @@
 		<UseWindowsForms>true</UseWindowsForms>
 		<EnableWindowsTargeting>true</EnableWindowsTargeting>
 		<NoWarn>CS0649,CS1591</NoWarn>
+    <EnableDefaultNoneItems>true</EnableDefaultNoneItems>
 	</PropertyGroup>
 
 	<ItemGroup>
