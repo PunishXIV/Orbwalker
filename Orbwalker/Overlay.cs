@@ -151,7 +151,7 @@ internal class Overlay : Window
         drawList.AddLine(center + new Vector2(-4 * scale, -1 * scale), center + new Vector2(-1 * scale, -1 * scale), color, thickness * 0.6f);
         
         //Skate Blade
-        var bladeY = center.Y + 8 * scale;
+        var bladeY = center.Y + 11 * scale;
         drawList.AddLine(new Vector2(center.X - 5 * scale, bladeY), new Vector2(center.X + 11 * scale, bladeY), color, thickness * 1.5f);
         
         //Blade Holders/Posts
