@@ -1,4 +1,4 @@
-﻿using Dalamud.Interface.Textures.TextureWraps;
+using Dalamud.Interface.Textures.TextureWraps;
 using System.IO;
 namespace Orbwalker;
 
