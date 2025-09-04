@@ -1,6 +1,5 @@
 using Dalamud.Interface.Textures.TextureWraps;
 using ECommons.ExcelServices;
-using ECommons.GameFunctions;
 using ECommons.GameHelpers;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using Lumina.Excel;
@@ -28,16 +27,19 @@ internal static unsafe class Util
     internal static IEnumerable<uint> GetMovePreventionActions()
     {
         if (C.PreventFlame)
-            foreach(uint x in Data.FlamethrowerAction)
+            foreach (uint x in Data.FlamethrowerAction)
                 yield return x;
         if (C.PreventImprov)
-            foreach(uint x in Data.ImprovisationAction)
+            foreach (uint x in Data.ImprovisationAction)
                 yield return x;
         if (C.PreventPassage)
-            foreach(uint x in Data.PassageAction)
+            foreach (uint x in Data.PassageAction)
                 yield return x;
         if (C.PreventPhantom)
-            foreach(uint x in Data.PhantomFlurryAction)
+            foreach (uint x in Data.PhantomFlurryAction)
+                yield return x;
+        if (C.PreventMeditate)
+            foreach (uint x in Data.MeditateAction)
                 yield return x;
     }
 
@@ -47,6 +49,7 @@ internal static unsafe class Util
         if (C.PreventImprov) yield return Data.ImprovisationBuff;
         if (C.PreventPassage) yield return Data.PassageBuff;
         if (C.PreventPhantom) yield return Data.PhantomFlurryBuff;
+        if (C.PreventMeditate) yield return Data.MeditateBuff;
     }
 
     internal static float GetRCorGDC()
