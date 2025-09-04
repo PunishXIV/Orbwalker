@@ -2,8 +2,8 @@
 using Dalamud.Utility.Signatures;
 using ECommons.Hooks;
 using FFXIVClientStructs.FFXIV.Client.Game;
-using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Client.Game.Object;
+using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 
 namespace Orbwalker;
 
@@ -29,7 +29,7 @@ internal unsafe class Memory : IDisposable
     internal void EnableDisableBuffer()
     {
         var enabled = C.Enabled && C.Buffer;
-        if(enabled && !UseActionHook.IsEnabled)
+        if (enabled && !UseActionHook.IsEnabled)
         {
             UseActionHook.Enable();
             PluginLog.Debug($"UseActionHook enabled");
@@ -87,7 +87,7 @@ internal unsafe class Memory : IDisposable
 
 
     delegate byte InputData_IsInputIDKeyPressedDelegate(nint a1, int key);
-    [Signature("E8 ?? ?? ?? ?? 33 DB 41 8B D5", DetourName =nameof(InputData_IsInputIDKeyPressedDetour), Fallibility = Fallibility.Infallible)]
+    [Signature("E8 ?? ?? ?? ?? 33 DB 41 8B D5", DetourName = nameof(InputData_IsInputIDKeyPressedDetour), Fallibility = Fallibility.Infallible)]
     Hook<InputData_IsInputIDKeyPressedDelegate> InputData_IsInputIDKeyPressedHook;
     byte InputData_IsInputIDKeyPressedDetour(nint a1, int key)
     {

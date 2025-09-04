@@ -9,6 +9,7 @@ using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using PunishLib;
 using System.Windows.Forms;
+
 namespace Orbwalker;
 
 public unsafe class Orbwalker : IDalamudPlugin
@@ -22,6 +23,7 @@ public unsafe class Orbwalker : IDalamudPlugin
     private bool IsReleaseButtonHeld;
     internal Memory Memory;
     internal bool ShouldUnlock;
+    internal bool ShouldBlock;
     private bool WasCancelled;
 
     public Orbwalker(IDalamudPluginInterface pluginInterface)
@@ -75,6 +77,14 @@ public unsafe class Orbwalker : IDalamudPlugin
             : C.ReleaseKey != Keys.None && IsKeyPressed((int)C.ReleaseKey);
     }
 
+    internal bool IsBlockKeyHeld()
+    {
+        if (Framework.Instance()->WindowInactive) return false;
+        return C.ControllerMode
+            ? C.BlockButton != GamepadButtons.None && (GamePad.IsButtonPressed(C.BlockButton) || GamePad.IsButtonHeld(C.BlockButton))
+            : C.BlockKey != Keys.None && IsKeyPressed((int)C.BlockKey);
+    }
+
     private void Framework_Update(object framework)
     {
         PerformDelayedAction();
@@ -82,6 +92,7 @@ public unsafe class Orbwalker : IDalamudPlugin
         if (C.Enabled && Util.CanUsePlugin())
         {
             UpdateShouldUnlock();
+            UpdateShouldBlock();
 
             if (ShouldPreventMovement() && !ShouldUnlock)
             {
@@ -111,7 +122,7 @@ public unsafe class Orbwalker : IDalamudPlugin
             {
                 DelayedAction.Use();
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 e.Log();
             }
@@ -137,8 +148,9 @@ public unsafe class Orbwalker : IDalamudPlugin
             IsReleaseButtonHeld = IsUnlockKeyHeld();
         }
     }
+    private void UpdateShouldBlock() => ShouldBlock = C.BlockAllMovement && IsBlockKeyHeld() && !IsUnlockKeyHeld();
 
-    private bool ShouldPreventMovement() => IsCastingOrDelayedAction() || IsCastableActionWithLowGCD() || IsInCombatWithLowGCDAndNotUnusableAction() || IsStronglyLocked;
+    private bool ShouldPreventMovement() => IsCastingOrDelayedAction() || IsCastableActionWithLowGCD() || IsInCombatWithLowGCDAndNotUnusableAction() || IsStronglyLocked || ShouldBlock;
 
     private bool PlayerHasNoMoveStatuses()
     {
