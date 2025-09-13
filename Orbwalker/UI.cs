@@ -2,6 +2,7 @@
 using Dalamud.Interface.Components;
 using ECommons.ExcelServices;
 using ECommons.GameFunctions;
+using ECommons.GameHelpers;
 using ECommons.Gamepad;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using PunishLib.ImGuiMethods;
@@ -166,6 +167,7 @@ internal static unsafe class UI
 
         #region Overlay
         ImGui.TextColored(0xFFFFDCEB, $"Overlay");
+        ImGuiEx.RadioButtonBool("Image-based", "Vector-based", ref C.UseImguiOverlay, true, inverted: true);
         ImGuiGroup.BeginGroupBox();
         ImGuiEx.Text($"Display Overlay");
         ImGuiComponents.HelpMarker("Choose when to display the Orbwalker overlay when enabled.");
@@ -174,10 +176,20 @@ internal static unsafe class UI
         Spacing(true); ImGui.Checkbox($"Always", ref C.DisplayAlways);
         Spacing(true);
         ImGui.SetNextItemWidth(100f);
-        ImGui.SliderFloat($"Overlay scale", ref C.SizeMod.ValidateRange(0.5f, 2f), 0.8f, 1.2f);
+        ImGui.SliderFloat($"Overlay scale", ref C.SizeMod.ValidateRange(0.5f, 40f), 0.5f, 4f);
         Spacing();
-        ImGui.Checkbox($"Vertical layout", ref C.DisplayVertical);
-        ImGuiComponents.HelpMarker("Display buttons vertically instead of horizontally.");
+        if(C.UseImguiOverlay)
+        {
+            ImGui.Checkbox($"Vertical layout", ref C.DisplayVertical);
+        }
+        else
+        {
+            var b = false;
+            ImGui.BeginDisabled();
+            ImGui.Checkbox("Vertical layout", ref b);
+            ImGui.EndDisabled();
+        }
+        ImGuiComponents.HelpMarker("Display buttons vertically instead of horizontally. Only available with vector-based overlay.");
         ImGuiGroup.EndGroupBox();
         #endregion
     }
@@ -227,16 +239,34 @@ internal static unsafe class UI
                 C.EnabledJobs[x] = !b;
             }
         }
+
+        if(Player.Available)
+        {
+            ImGui.SameLine();
+            var val = C.EnabledJobs.SafeSelect(Player.Job);
+            if(ImGui.Checkbox($"Current: {Player.Job}", ref val))
+            {
+                C.EnabledJobs[Player.Job] = val;
+            }
+        }
+
         ImGui.Separator();
         ImGui.Spacing();
         ImGui.Columns(5, "###JobGrid", false);
-        foreach (var job in Enum.GetValues<Job>())
+        int i = 0;
+        foreach (var job in Enum.GetValues<Job>().OrderBy(x => !x.IsCombat()).ThenBy(x => x.IsHealer()).ThenBy(x => x.IsTank()).ThenBy(x => x.IsMeleeDps()).ThenBy(x => x.IsMagicalRangedDps()))
         {
+            i++;
             if (job == Job.ADV) continue;
             if (!P.Config.EnabledJobs.ContainsKey(job))
                 P.Config.EnabledJobs[job] = false;
 
             bool val = P.Config.EnabledJobs[job];
+            if(ThreadLoadImageHandler.TryGetIconTextureWrap(job.GetIcon(), false, out var tex))
+            {
+                ImGui.Image(tex.Handle, new(ImGui.GetFrameHeight()));
+                ImGui.SameLine(0, 2);
+            }
             if (ImGui.Checkbox($"{job}", ref val))
             {
                 if (val)
@@ -319,7 +349,8 @@ internal static unsafe class UI
 
                 P.Config.EnabledJobs[job] = val;
             }
-            ImGui.NextColumn();
+
+            if(job.EqualsAny(Job.PCT, Job.VPR, Job.GNB, Job.SGE)) ImGui.NextColumn();
         }
         ImGui.Columns(1);
         ImGui.Spacing();

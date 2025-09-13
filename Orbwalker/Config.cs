@@ -29,6 +29,7 @@ public class Config
     public bool PVP = false;
     public bool BlockTP = false;
     public bool BlockReturn = false;
+    public bool UseImguiOverlay = false;
 
     public Keys ReleaseKey = Keys.LControlKey;
     public Keys BlockKey = Keys.XButton1;

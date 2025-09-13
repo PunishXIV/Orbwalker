@@ -39,6 +39,7 @@ public unsafe class Orbwalker : IDalamudPlugin
             EzCmd.Add("/orbwalker", EzConfigGui.Open);
             Svc.Framework.Update += Framework_Update;
             EzConfigGui.WindowSystem.AddWindow(new Overlay());
+            EzConfigGui.WindowSystem.AddWindow(new ImGuiOverlay());
             Memory.EnableDisableBuffer();
         });
         IPC = new();

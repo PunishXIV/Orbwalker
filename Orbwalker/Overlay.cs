@@ -58,5 +58,5 @@ internal class Overlay : Window
 
     private string GetImagePath(string name) => Path.Combine(Svc.PluginInterface.AssemblyLocation.DirectoryName, "res", $"{name}.png");
 
-    public override bool DrawConditions() => C.Enabled && Util.CanUsePlugin() && (C.DisplayAlways || Svc.Condition[ConditionFlag.BoundByDuty56] && C.DisplayDuty || Svc.Condition[ConditionFlag.InCombat] && C.DisplayBattle);
+    public override bool DrawConditions() => !C.UseImguiOverlay && C.Enabled && Util.CanUsePlugin() && (C.DisplayAlways || Svc.Condition[ConditionFlag.BoundByDuty56] && C.DisplayDuty || Svc.Condition[ConditionFlag.InCombat] && C.DisplayBattle);
 }

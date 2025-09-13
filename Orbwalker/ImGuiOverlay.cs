@@ -2,7 +2,7 @@
 
 internal class ImGuiOverlay : Window
 {
-    public ImGuiOverlay() : base("OrbwalkerOverlay", ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse, true)
+    public ImGuiOverlay() : base("OrbwalkerOverlayImgui", ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse, true)
     {
         RespectCloseHotkey = false;
         IsOpen = true;
@@ -226,5 +226,5 @@ internal class ImGuiOverlay : Window
         drawList.AddLine(lineStart, lineEnd, color, thickness);
     }
 
-    public override bool DrawConditions() => C.Enabled && Util.CanUsePlugin() && (C.DisplayAlways || Svc.Condition[ConditionFlag.BoundByDuty56] && C.DisplayDuty || Svc.Condition[ConditionFlag.InCombat] && C.DisplayBattle);
+    public override bool DrawConditions() => C.UseImguiOverlay && C.Enabled && Util.CanUsePlugin() && (C.DisplayAlways || Svc.Condition[ConditionFlag.BoundByDuty56] && C.DisplayDuty || Svc.Condition[ConditionFlag.InCombat] && C.DisplayBattle);
 }
