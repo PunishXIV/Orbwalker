@@ -4,7 +4,6 @@ using ECommons.ExcelServices;
 using ECommons.GameFunctions;
 using ECommons.Gamepad;
 using FFXIVClientStructs.FFXIV.Client.Game;
-using Lumina.Excel.Sheets;
 using PunishLib.ImGuiMethods;
 using System.IO;
 using System.Windows.Forms;
@@ -23,41 +22,7 @@ internal static unsafe class UI
             ("About", () => AboutTab.Draw(P.Name), null, true),
             ("Debug".NullWhenFalse(C.Debug), Debug, ImGuiColors.DalamudGrey3, true),
             InternalLog.ImGuiTab(C.Debug)
-
         );
-    }
-
-    static void Extras()
-    {
-
-        ImGuiEx.Text($"Job Specific Options");
-        ImGuiGroup.BeginGroupBox();
-        ImGuiEx.Text($"Block movement when these actions are active:");
-        ImGuiEx.Spacing(); ImGui.Checkbox("Passage of Arms (PLD)", ref C.PreventPassage);
-        ImGuiEx.Spacing(); ImGui.Checkbox("Flamethrower (MCH)", ref C.PreventFlame);
-        ImGuiEx.Spacing(); ImGui.Checkbox("Improvisation (DNC)", ref C.PreventImprov);
-        ImGuiEx.Spacing(); ImGui.Checkbox("Phantom Flurry (BLU)", ref C.PreventPhantom);
-        ImGuiGroup.EndGroupBox();
-
-
-        ImGuiEx.Text($"Miscellaneous Casts");
-        ImGuiGroup.BeginGroupBox();
-        ImGuiEx.Text($"Block movement when these actions are being casted:");
-        ImGuiEx.Spacing(); ImGui.Checkbox("Teleport", ref C.BlockTP);
-        ImGuiEx.Spacing(); ImGui.Checkbox("Return", ref C.BlockReturn);
-        ImGuiGroup.EndGroupBox();
-
-        ImGuiEx.Text($"PvP Settings");
-        ImGuiGroup.BeginGroupBox();
-        ImGui.Checkbox($"Enable PvP Orbwalking", ref C.PVP);
-        ImGuiComponents.HelpMarker("Allows use of Orbwalker when in PvP game modes such as Frontlines and Crystaline Conflict. This is considered an unfair advantage over other players so use at your own risk (and conscious).");
-        ImGuiGroup.EndGroupBox();
-    }
-
-    static void Spacing(bool cont = false)
-    {
-        ImGuiEx.TextV($" {(cont ? "├" : "└")} ");
-        ImGui.SameLine();
     }
 
     static void Settings()
@@ -87,10 +52,18 @@ internal static unsafe class UI
         {
             P.Memory.EnableDisableBuffer();
         }
-        ImGuiEx.Text($"Movement");
+        ImGui.Checkbox("Controller Mode", ref C.ControllerMode);
+        ImGuiComponents.HelpMarker($"Enable this to configure Controller specific options instead.");
+        ImGui.Separator();
+
+        #region Movement
+        ImGui.TextColored(0xFFFFDCEB, $"Movement");
         ImGuiGroup.BeginGroupBox();
-        ImGuiEx.Text($"Slidecast Window Calibration:");
-        ImGuiComponents.HelpMarker("Switches between automatic slidecast window calibration or allows you to set a manual value. Automatic mode is fully reliable but will always result in smaller slidecast windows than you can manually configure based on spellspeed/network latency.");
+        ImGuiEx.Text($"Slidecast Window Calibration");
+        ImGuiComponents.HelpMarker(
+            "Switch between automatic slidecast window calibration or manually setting a value.\n\n" +
+            "\"Automatic\" mode is fully reliable, but will always result in smaller slidecast windows. You may also need to manually configure based on current spell speed or network latency."
+            );
         Spacing(!C.IsSlideAuto);
         ImGuiEx.RadioButtonBool("Automatic", "Manual", ref C.IsSlideAuto, true);
         if (!C.IsSlideAuto)
@@ -99,8 +72,15 @@ internal static unsafe class UI
             ImGui.SetNextItemWidth(200f);
             ImGui.SliderFloat("Unlock at, s", ref C.Threshold, 0.1f, 1f);
         }
-        ImGuiEx.Text($"Orbwalking Mode:");
-        ImGuiComponents.HelpMarker("Switch between the two modes. \"Slidecast\" mode is the default and simply prevents player movement until the slidecast window is available, locking movement again to begin the next cast. You must be stationary for the first cast in most cases. \"Slidelock\" mode on the otherhand permanently locks the player from moving while in combat and only allows for movement during the slidecast window. The movement release key is the only way to enable movement when this mode is used.");
+        ImGui.Spacing();
+        ImGui.Separator();
+        ImGui.Spacing();
+        ImGuiEx.Text($"Orbwalking Mode");
+        ImGuiComponents.HelpMarker(
+            "Switch between two available Orbwalking modes:\n\n " +
+            "\"Slidecast\" mode is the default and simply prevents player movement until the slidecast window is available, locking movement again to begin the next cast. You must be stationary for the first cast in most cases. \n\n" +
+            "\"Slidelock\" mode on the otherhand permanently locks the player from moving while in combat and only allows for movement during the slidecast window. The movement release key is the only way to enable movement when this mode is used."
+            );
         Spacing();
         if (ImGui.RadioButton("Slidecast", !C.ForceStopMoveCombat))
         {
@@ -111,16 +91,30 @@ internal static unsafe class UI
         {
             C.ForceStopMoveCombat = true;
         }
-
+        ImGui.Spacing();
+        ImGui.Separator();
+        ImGui.Spacing();
         if (ImGui.Checkbox($"Buffer Initial Cast", ref C.Buffer))
         {
             P.Memory.EnableDisableBuffer();
         }
         ImGuiComponents.HelpMarker($"Removes the requirement for the player to be stationary when channeling the first cast by buffering it until movement is halted. This setting may cause strange behavior with plugins such as Redirect or ReAction, or prevent their options from working at all, be warned!");
-
-        ImGui.SetNextItemWidth(200f);
-        ImGui.Checkbox("Controller Mode", ref C.ControllerMode);
-
+        ImGui.Spacing();
+        ImGui.Separator();
+        ImGui.Spacing();
+        ImGui.Checkbox($"Block All Movement", ref C.BlockAllMovement);
+        ImGuiComponents.HelpMarker("Blocks all movement when holding down a specified key.");
+        if (C.BlockAllMovement)
+        {
+            if (C.ControllerMode)
+                DrawKeybind("Block Movement Button", ref C.BlockButton);
+            else
+                DrawKeybind("Block Movement Key", ref C.BlockKey);
+            ImGuiComponents.HelpMarker("Bind a key to fully block any character movement.");
+        }
+        ImGui.Spacing();
+        ImGui.Separator();
+        ImGui.Spacing();
         if (C.ControllerMode)
             DrawKeybind("Movement Release Button", ref C.ReleaseButton);
         else
@@ -132,9 +126,10 @@ internal static unsafe class UI
         ImGuiComponents.HelpMarker("Switches the movement release key from needing to be held, to becoming a toggle.");
         Spacing();
         ImGuiEx.RadioButtonBool("Hold", "Toggle", ref C.IsHoldToRelease, true);
-
         if (!C.ControllerMode)
         {
+            ImGui.Separator();
+            ImGui.Spacing();
             ImGui.Checkbox($"Enable Mouse Button Release", ref C.DisableMouseDisabling);
             ImGuiComponents.HelpMarker("Allows emergency movement via holding down MB1 and MB2 simultaneously.");
             ImGuiEx.TextV($"Movement keys:");
@@ -149,13 +144,14 @@ internal static unsafe class UI
                 ImGui.EndCombo();
             }
         }
-
+        ImGui.Spacing();
+        ImGui.Separator();
+        ImGui.Spacing();
         ImGui.PushItemWidth(300);
         ImGuiEx.TextV($"Ground Targeting Hold (seconds):");
         ImGui.SameLine();
         ImGui.SetNextItemWidth(100f);
-
-        if (ImGui.InputFloat("###GroundedHoldConfig", ref P.Config.GroundedHold,0,0,"%.2g"))
+        if (ImGui.InputFloat("###GroundedHoldConfig", ref P.Config.GroundedHold, 0, 0, "%.2g"))
         {
             if (P.Config.GroundedHold <= 0)
                 P.Config.GroundedHold = 0;
@@ -163,30 +159,31 @@ internal static unsafe class UI
             if (P.Config.GroundedHold % 0.01f != 0)
                 P.Config.GroundedHold = (float)Math.Round(P.Config.GroundedHold, 2, MidpointRounding.ToNegativeInfinity);
         }
-
         ImGuiComponents.HelpMarker($"Spells which have cast times that are also targeted on the ground (mainly found in BLU) register casting as the target appears, and will cancel cast times if moving as it's confirmed. " +
                                    $"This option forces your character to stop as the target appears for however long as to not cancel the cast pre-emptively.");
-
         ImGuiGroup.EndGroupBox();
+        #endregion
 
-        ImGuiEx.Text($"Overlay");
+        #region Overlay
+        ImGui.TextColored(0xFFFFDCEB, $"Overlay");
         ImGuiGroup.BeginGroupBox();
-
         ImGuiEx.Text($"Display Overlay");
         ImGuiComponents.HelpMarker("Choose when to display the Orbwalker overlay when enabled.");
         Spacing(true); ImGui.Checkbox($"In Combat", ref C.DisplayBattle);
         Spacing(true); ImGui.Checkbox($"In Duty", ref C.DisplayDuty);
         Spacing(true); ImGui.Checkbox($"Always", ref C.DisplayAlways);
-        Spacing();
+        Spacing(true);
         ImGui.SetNextItemWidth(100f);
         ImGui.SliderFloat($"Overlay scale", ref C.SizeMod.ValidateRange(0.5f, 2f), 0.8f, 1.2f);
-
+        Spacing();
+        ImGui.Checkbox($"Vertical layout", ref C.DisplayVertical);
+        ImGuiComponents.HelpMarker("Display buttons vertically instead of horizontally.");
         ImGuiGroup.EndGroupBox();
+        #endregion
     }
-
     static void Jobs()
     {
-        ImGuiEx.Text($"Jobs");
+        ImGui.TextColored(0xFFFFDCEB, $"Jobs");
         ImGuiComponents.HelpMarker("Select the jobs you wish to use Orbwalker's movement locking features on. Not all jobs have cast times, but if you have the extra features enabled for the general actions it will apply to those jobs.");
         ImGuiGroup.BeginGroupBox();
         ImGuiEx.TextV("Toggle:");
@@ -200,6 +197,7 @@ internal static unsafe class UI
                 C.EnabledJobs[x] = !b;
             }
         }
+
         ImGui.SameLine();
         if (ImGui.Button($"Casters"))
         {
@@ -209,17 +207,28 @@ internal static unsafe class UI
                 C.EnabledJobs[x] = !b;
             }
         }
+
         ImGui.SameLine();
-        if (ImGui.Button("DoL/DoH"))
+        if (ImGui.Button("DoH"))
         {
-            var jobs = Svc.Data.GetExcelSheet<ClassJob>().Where(x => x.ClassJobCategory.Value.RowId.EqualsAny<uint>(33, 32)).Select(x => x.RowId).Cast<Job>();
-            var b = jobs.All(x => C.EnabledJobs.TryGetValue(x, out var v) && v);
-            foreach (var x in jobs)
+            var b = Data.HandJobs.All(x => C.EnabledJobs.TryGetValue(x, out var v) && v);
+            foreach (var x in Data.HandJobs)
+            {
+                C.EnabledJobs[x] = !b;
+            }
+        }
+
+        ImGui.SameLine();
+        if (ImGui.Button("DoL"))
+        {
+            var b = Data.LandJobs.All(x => C.EnabledJobs.TryGetValue(x, out var v) && v);
+            foreach (var x in Data.LandJobs)
             {
                 C.EnabledJobs[x] = !b;
             }
         }
         ImGui.Separator();
+        ImGui.Spacing();
         ImGui.Columns(5, "###JobGrid", false);
         foreach (var job in Enum.GetValues<Job>())
         {
@@ -313,9 +322,46 @@ internal static unsafe class UI
             ImGui.NextColumn();
         }
         ImGui.Columns(1);
+        ImGui.Spacing();
         ImGuiGroup.EndGroupBox();
     }
+    static void Extras()
+    {
+        #region Job Specific Actions
+        ImGui.TextColored(0xFFFFDCEB, $"Job-specific Actions");
+        ImGuiComponents.HelpMarker($"Actions that are not technically casts but can be interrupted or stopped early due to movement of any kind.");
+        ImGuiGroup.BeginGroupBox();
+        ImGuiEx.Text($"Block movement when these actions are active:");
+        ImGui.Separator();
+        ImGuiEx.Spacing(); ImGui.Checkbox("Passage of Arms (PLD)", ref C.PreventPassage);
+        ImGuiEx.Spacing(); ImGui.Checkbox("Flamethrower (MCH)", ref C.PreventFlame);
+        ImGuiEx.Spacing(); ImGui.Checkbox("Meditate (SAM)", ref C.PreventMeditate);
+        ImGuiEx.Spacing(); ImGui.Checkbox("Improvisation (DNC)", ref C.PreventImprov);
+        ImGuiEx.Spacing(); ImGui.Checkbox("Phantom Flurry (BLU)", ref C.PreventPhantom);
+        ImGuiEx.Spacing();
+        ImGuiGroup.EndGroupBox();
+        #endregion
 
+        #region Miscellaneous Casts
+        ImGui.TextColored(0xFFFFDCEB, $"Miscellaneous Casts");
+        ImGuiGroup.BeginGroupBox();
+        ImGuiEx.Text($"Block movement when these actions are being casted:");
+        ImGui.Separator();
+        ImGuiEx.Spacing(); ImGui.Checkbox("Teleport", ref C.BlockTP);
+        ImGuiEx.Spacing(); ImGui.Checkbox("Return", ref C.BlockReturn);
+        ImGuiEx.Spacing();
+        ImGuiGroup.EndGroupBox();
+        #endregion
+
+        #region PvP
+        ImGui.TextColored(0xFFFFDCEB, $"PvP");
+        ImGuiGroup.BeginGroupBox();
+        ImGuiEx.Spacing(); ImGui.Checkbox($"Enable PvP Orbwalking", ref C.PVP);
+        ImGuiComponents.HelpMarker("Allows use when in PvP game modes such as Frontlines and Crystaline Conflict.\n\nThis is considered an unfair advantage over other players so use at your own risk (and conscious).");
+        ImGuiEx.Spacing();
+        ImGuiGroup.EndGroupBox();
+        #endregion
+    }
     static void Debug()
     {
         //ImGui.InputInt($"forceDisableMovementPtr", ref P.Memory.ForceDisableMovement);
@@ -329,6 +375,13 @@ internal static unsafe class UI
     }
 
     static string KeyInputActive = null;
+
+    static void Spacing(bool cont = false)
+    {
+        ImGuiEx.TextV($" {(cont ? "├" : "└")} ");
+        ImGui.SameLine();
+    }
+
     static bool DrawKeybind(string text, ref Keys key)
     {
         bool ret = false;
@@ -344,7 +397,7 @@ internal static unsafe class UI
                 ImGuiEx.Text(ImGuiColors.DalamudYellow, $"Now press new key...");
                 foreach (var x in Enum.GetValues<Keys>())
                 {
-                    if (IsKeyPressed((int) x))
+                    if (IsKeyPressed((int)x))
                     {
                         KeyInputActive = null;
                         key = x;
