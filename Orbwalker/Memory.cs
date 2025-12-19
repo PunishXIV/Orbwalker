@@ -87,7 +87,7 @@ internal unsafe class Memory : IDisposable
 
 
     delegate byte InputData_IsInputIDKeyPressedDelegate(nint a1, int key);
-    [Signature("E8 ?? ?? ?? ?? 33 DB 41 8B D5", DetourName = nameof(InputData_IsInputIDKeyPressedDetour), Fallibility = Fallibility.Infallible)]
+    [Signature("E8 ?? ?? ?? ?? 4C 8D 76 06", DetourName = nameof(InputData_IsInputIDKeyPressedDetour), Fallibility = Fallibility.Infallible)]
     Hook<InputData_IsInputIDKeyPressedDelegate> InputData_IsInputIDKeyPressedHook;
     byte InputData_IsInputIDKeyPressedDetour(nint a1, int key)
     {
