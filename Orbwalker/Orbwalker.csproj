@@ -2,7 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <Authors>Puni.sh</Authors>
-        <Version>1.0.1.7</Version>
+        <Version>1.0.1.8</Version>
     </PropertyGroup>
 
     <PropertyGroup>
@@ -29,7 +29,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="DalamudPackager" Version="2.1.13" />
+      <PackageReference Include="DalamudPackager" Version="14.0.1" />
     </ItemGroup>
 
     <ItemGroup>
