@@ -18,7 +18,7 @@ internal class Data
     internal static uint[] PhantomFlurryAction = [23288];
     internal static uint[] MeditateAction = [7497];
 
-    internal static Job[] CastingJobs = [Job.SMN, Job.ACN, Job.RDM, Job.BLM, Job.THM, Job.WHM, Job.CNJ, Job.SCH, Job.AST, Job.SGE, Job.RPR, Job.SAM, Job.BLU, Job.PCT];
+    internal static Job[] CastingJobs = [Job.SMN, Job.ACN, Job.RDM, Job.BLM, Job.THM, Job.WHM, Job.CNJ, Job.SCH, Job.AST, Job.SGE, Job.RPR, Job.SAM, Job.BLU, Job.PCT, Job.BST];
     internal static Job[] HandJobs = [Job.CRP, Job.BSM, Job.ARM, Job.GSM, Job.LTW, Job.WVR, Job.ALC, Job.CUL];
     internal static Job[] LandJobs = [Job.MIN, Job.BTN, Job.FSH];
 }
