@@ -350,7 +350,7 @@ internal static unsafe class UI
                 P.Config.EnabledJobs[job] = val;
             }
 
-            if(job.EqualsAny(Job.PCT, Job.VPR, Job.GNB, Job.SGE)) ImGui.NextColumn();
+            if(job.EqualsAny(Job.PCT, Job.BST, Job.GNB, Job.SGE)) ImGui.NextColumn();
         }
         ImGui.Columns(1);
         ImGui.Spacing();
